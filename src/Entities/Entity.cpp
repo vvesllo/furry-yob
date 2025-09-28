@@ -1,7 +1,9 @@
 #include "../../include/Entities/Entity.h"
-#include "../../include/Core/ResourceManager.h"
 #include "../../include/Utils/Vector.h"
+#include "../../include/Core/ResourceManager.h"
+#include "../../include/Core/EntityManager.h"
 
+#include <print>
 
 Entity::Entity(const std::string& texture_name, const sf::Color& color, const sf::FloatRect& rect)
     : DynamicBody(texture_name, color, rect)
@@ -27,7 +29,7 @@ void Entity::update(const float& dt)
         entity_data.acceleration > 0 ? entity_data.acceleration * dt : 1.f
     );
 
-    const float& current_speed = velocity.current.length();
+    const float current_speed = velocity.current.length();
     const double additional_transformation_value = current_speed * std::sin(m_moving_frames_amount / 5.f);
 
     if (current_speed < 0.05f)
@@ -67,6 +69,8 @@ const EntityType Entity::getType()
 void Entity::damage(const float& damage_amount)
 {
     entity_data.health_points -= damage_amount;
+    if (entity_data.health_points <= 0)
+        destroy();
 }
 
 void Entity::heal(const float& heal_amount)

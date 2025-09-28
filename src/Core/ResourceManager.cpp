@@ -4,9 +4,9 @@ ResourceManager::ResourceManager()
 {
 	loadTexture("player", "resources/player.png");
 	loadTexture("tile", "resources/tile.png");
-	loadTexture("enemy_000", "resources/enemy_000.png");
-	loadTexture("enemy_001", "resources/enemy_001.png");
-	loadTexture("enemy_002", "resources/enemy_002.png");
+	loadTexture("enemy_000", "resources/enemies/enemy_000.png");
+	loadTexture("enemy_001", "resources/enemies/enemy_001.png");
+	loadTexture("enemy_002", "resources/enemies/enemy_002.png");
 	loadTexture("projectile", "resources/projectile.png");
 }
 

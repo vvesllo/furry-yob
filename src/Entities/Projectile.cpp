@@ -1,8 +1,8 @@
 #include "../../include/Entities/Projectile.h"
-#include "../../include/Entities/Enemy.h"
+#include "../../include/Entities/Enemies/Enemy000.h"
 #include "../../include/Entities/Player.h"
 
-#include "../../include/Core/MapManager.h"
+#include "../../include/Core/EntityManager.h"
 
 
 Projectile::Projectile(const sf::Vector2f& position, DynamicBody* sender, const ProjectileType type, const sf::Vector2f& direction)
@@ -26,7 +26,7 @@ Projectile::~Projectile()
 void Projectile::AI(const float& dt)
 {
     velocity.current = m_direction;
-    std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies = MapManager::getInstance().getEntities();
+    std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies = EntityManager::getInstance().getEntities();
     
     for (int i=0; i < dynamic_bodies.size(); ++i)
     {
@@ -36,7 +36,8 @@ void Projectile::AI(const float& dt)
             if (target != nullptr)
             {
                 target->damage(1);
-                ((Entity*)m_sender)->heal(1);
+                if (!target->isActive())
+                    ((Entity*)m_sender)->heal(1);
                 destroy();
                 return;
             }

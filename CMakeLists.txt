@@ -10,23 +10,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED On)
 add_executable(
     ${PROJECT_NAME}
         src/main.cpp
-        src/App.cpp                     include/App.h
+        src/App.cpp                         include/App.h
         
-        src/Core/MapManager.cpp         include/Core/MapManager.h
-        src/Core/SceneManager.cpp       include/Core/SceneManager.h
-        src/Core/ResourceManager.cpp    include/Core/ResourceManager.h
-        src/Core/InputManager.cpp       include/Core/InputManager.h
-        src/Core/Scene.cpp              include/Core/Scene.h
-        src/Core/DynamicBody.cpp        include/Core/DynamicBody.h
+        src/Core/LevelManager.cpp           include/Core/LevelManager.h
+        src/Core/EntityManager.cpp          include/Core/EntityManager.h
+        src/Core/SceneManager.cpp           include/Core/SceneManager.h
+        src/Core/ResourceManager.cpp        include/Core/ResourceManager.h
+        src/Core/InputManager.cpp           include/Core/InputManager.h
+        src/Core/Scene.cpp                  include/Core/Scene.h
+        src/Core/DynamicBody.cpp            include/Core/DynamicBody.h
         
-        src/Scenes/GameScene.cpp        include/Scenes/GameScene.h
+        src/Scenes/GameScene.cpp            include/Scenes/GameScene.h
         
-        src/Utils/Vector.cpp            include/Utils/Vector.h
+        src/Utils/Vector.cpp                include/Utils/Vector.h
         
-        src/Entities/Entity.cpp         include/Entities/Entity.h
-        src/Entities/Player.cpp         include/Entities/Player.h
-        src/Entities/Enemy.cpp          include/Entities/Enemy.h
-        src/Entities/Projectile.cpp     include/Entities/Projectile.h
+        src/Entities/Entity.cpp             include/Entities/Entity.h
+        src/Entities/Player.cpp             include/Entities/Player.h
+        src/Entities/Projectile.cpp         include/Entities/Projectile.h
+        src/Entities/Enemies/Enemy000.cpp   include/Entities/Enemies/Enemy000.h
+        src/Entities/Enemies/Enemy001.cpp   include/Entities/Enemies/Enemy001.h
 )
 
 find_package(SFML COMPONENTS Network Graphics Window Audio System CONFIG REQUIRED)

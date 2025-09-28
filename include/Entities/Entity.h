@@ -40,7 +40,6 @@ protected:
     virtual void AI(const float& dt)=0;
     void lookAt(const LookingDirection direction);
 
-
 public:
     Entity(const std::string& texture_name, const sf::Color& color, const sf::FloatRect& rect);
     virtual ~Entity()=default;

@@ -1,16 +1,16 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <optional>
 
 #include "DynamicBody.h"
 #include "../Entities/Projectile.h"
+#include "../Entities/Entity.h"
 
-class MapManager
+
+class EntityManager
 {
-private: 
-    sf::Vector2u m_size;
-    std::vector<std::string> m_map;
-    std::unique_ptr<sf::Sprite> m_tile_sprite;
+private:
     std::vector<std::unique_ptr<DynamicBody>> m_entities;
     std::vector<std::unique_ptr<DynamicBody>> m_projectiles;
 
@@ -18,18 +18,18 @@ private:
     void forEachDraw(std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies, std::unique_ptr<sf::RenderWindow>& target);
 
 public:
-	MapManager();
+	EntityManager();
 
-	MapManager(const MapManager& other) = delete;
-	MapManager& operator=(const MapManager& other) = delete;
+	EntityManager(const EntityManager& other) = delete;
+	EntityManager& operator=(const EntityManager& other) = delete;
 
-	static MapManager& getInstance();
-
-    void loadMap(const std::string& name);
-    const std::vector<std::string>& getMap();
+	static EntityManager& getInstance();
 
     template<class TEntity>
-    void newEntity(const sf::Vector2f& position);
+    void newEntity(const sf::Vector2f& position)
+    {
+        m_entities.emplace_back(std::make_unique<TEntity>(position));
+    }
 
     void newProjectile(
         DynamicBody* sender,
@@ -43,7 +43,8 @@ public:
 
     std::vector<std::unique_ptr<DynamicBody>>& getEntities();
     std::vector<std::unique_ptr<DynamicBody>>& getProjectiles();
-
-    const sf::Vector2u& getSize();
-    std::unique_ptr<sf::Sprite>& getTileSprite();
+    
+    template<class T>
+    std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>> findByClass();
+    std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>> findEntityByType(const EntityType& type);
 };

@@ -1,9 +1,9 @@
 #include "../../include/Entities/Player.h"
 #include "../../include/Entities/Projectile.h"
-#include "../../include/Entities/Enemy.h"
+#include "../../include/Entities/Enemies/Enemy000.h"
 
 #include "../../include/Core/InputManager.h"
-#include "../../include/Core/MapManager.h"
+#include "../../include/Core/EntityManager.h"
 
 Player::Player(const sf::Vector2f& position)
     : Entity("player", sf::Color::Red, {
@@ -14,7 +14,7 @@ Player::Player(const sf::Vector2f& position)
     entity_data.acceleration = 10.f;
     entity_data.speed = 160.f;
     entity_data.type = EntityType::Player;
-    entity_data.health_points = 5;
+    entity_data.health_points = 50;
 
     m_shoot_cooldown=0;
 }
@@ -32,7 +32,7 @@ void Player::AI(const float& dt)
     
     if (m_shoot_cooldown == 0.f && InputManager::getInstance().getMouse().left_button)
     {
-        MapManager::getInstance().newProjectile(
+        EntityManager::getInstance().newProjectile(
             (DynamicBody*)this,
             ProjectileType::Friendly,
             getCenter(),

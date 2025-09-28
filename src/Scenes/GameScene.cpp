@@ -1,22 +1,25 @@
 #include "../../include/Scenes/GameScene.h"
 
 #include "../../include/Entities/Player.h"
-#include "../../include/Entities/Enemy.h"
 #include "../../include/Entities/Projectile.h"
 
-#include "../../include/Core/MapManager.h"
+#include "../../include/Entities/Enemies/Enemy000.h"
+#include "../../include/Entities/Enemies/Enemy001.h"
+
+#include "../../include/Core/EntityManager.h"
+#include "../../include/Core/LevelManager.h"
 #include "../../include/Core/InputManager.h"
 
 
 GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
 	: m_window(window)
 {
-	MapManager::getInstance().newEntity<Player>(sf::Vector2f{ 0, 0 });
+	EntityManager::getInstance().newEntity<Player>(sf::Vector2f{ 0, 0 });
 
-	MapManager::getInstance().loadMap("map1");
+	LevelManager::getInstance().load("map2");
 
-	m_calm_time = 0;
 	m_max_calm_time = 5.f;
+	m_calm_time = m_max_calm_time;
 
 	sf::View view{ 
 		sf::FloatRect{
@@ -76,7 +79,7 @@ void GameScene::update(const float& dt)
 {
 	size_t enemy_amount = 0;
 	
-	for (const auto& entity : MapManager::getInstance().getEntities())
+	for (const auto& entity : EntityManager::getInstance().getEntities())
 	{
 		enemy_amount += (int)(((Entity*)entity.get())->getType() == EntityType::Enemy);
 	}
@@ -91,39 +94,39 @@ void GameScene::update(const float& dt)
 		m_calm_time -= dt;
 	}
 	
-	MapManager::getInstance().update(dt);
+	EntityManager::getInstance().update(dt);
 }
 
 void GameScene::draw()
 {
 	m_window->clear(sf::Color(0x28'4A'5F'FF));
 
-	const std::vector<std::string>& map = MapManager::getInstance().getMap();
+	const std::vector<std::string>& map = LevelManager::getInstance().get();
 	for (size_t i=0; i < map.size(); ++i)
 	{
 		for (size_t j=0; j < map[i].size(); ++j)
 		{
-			if (map[i][j] == '0')
+			if (map[i][j] == '1')
 			{
-				auto& tile = MapManager::getInstance().getTileSprite();
+				auto& tile = LevelManager::getInstance().getTileSprite();
 				tile->setPosition(sf::Vector2f{
-					(float)(16 * (-(float)MapManager::getInstance().getSize().x / 2.f + j)),
-					(float)(16 * (-(float)MapManager::getInstance().getSize().y / 2.f + i)) 
+					(float)(16 * (-(float)LevelManager::getInstance().getSize().x / 2.f + j)),
+					(float)(16 * (-(float)LevelManager::getInstance().getSize().y / 2.f + i)) 
 				});
 				m_window->draw(*tile);
 			}
 		}
 	}	
 	
-	MapManager::getInstance().draw(m_window);
+	EntityManager::getInstance().draw(m_window);
     
 	m_window->display();
 }
 
 void GameScene::spawnEnemies()
 {
-	MapManager::getInstance().newEntity<Enemy>(sf::Vector2f{ 100,  100 });
-	MapManager::getInstance().newEntity<Enemy>(sf::Vector2f{-100,  100 });
-	MapManager::getInstance().newEntity<Enemy>(sf::Vector2f{-100, -100 });
-	MapManager::getInstance().newEntity<Enemy>(sf::Vector2f{ 100, -100 });
+	EntityManager::getInstance().newEntity<Enemy000>(sf::Vector2f{ 100,  100 });
+	EntityManager::getInstance().newEntity<Enemy001>(sf::Vector2f{-100,  100 });
+	EntityManager::getInstance().newEntity<Enemy000>(sf::Vector2f{-100, -100 });
+	EntityManager::getInstance().newEntity<Enemy001>(sf::Vector2f{ 100, -100 });
 }

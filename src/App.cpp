@@ -3,6 +3,8 @@
 #include "../include/Core/SceneManager.h"
 #include "../include/Scenes/GameScene.h"
 
+#include <print>
+
 App::App(const unsigned short& width, const unsigned short& height, const char* title)
 {
     m_window = std::make_unique<sf::RenderWindow>(

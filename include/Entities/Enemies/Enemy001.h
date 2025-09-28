@@ -2,17 +2,17 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Entity.h"
+#include "../Entity.h"
 
-class Enemy : public Entity
+class Enemy001 : public Entity
 {
 private:
     bool m_staying;
     float m_shoot_cooldown;
 
 public:
-    Enemy(const sf::Vector2f& position);
-    ~Enemy();
+    Enemy001(const sf::Vector2f& position);
+    ~Enemy001();
 
     void AI(const float& dt) override;
 };

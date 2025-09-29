@@ -12,6 +12,7 @@ private:
 protected:
     std::unique_ptr<sf::Sprite> sprite;
     sf::FloatRect rect;
+    const sf::Color m_color;
     
     
     struct {
@@ -33,6 +34,7 @@ public:
     
     const sf::Vector2f getCenter();
     const sf::FloatRect getRect();
+    const sf::Color getColor();
 
     void destroy();
     const bool isActive();

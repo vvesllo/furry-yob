@@ -19,17 +19,22 @@ EntityManager& EntityManager::getInstance()
 
 void EntityManager::newProjectile(
     DynamicBody* sender,
-    const ProjectileType type,
-    const sf::Vector2f& position,
+    const std::string& texture_name,
+    const sf::FloatRect& rect,
     const sf::Vector2f& direction,
-    const float& speed)
+    const float& speed,
+    const float& life_time,
+    const bool piercing
+)
 {
     m_projectiles.emplace_back(
         std::make_unique<Projectile>(
-            position,
-            sender,
-            type,
-            direction * speed
+        rect,
+        sender,
+        texture_name,
+        direction * speed,
+        life_time,
+        piercing
         )
     );
 }

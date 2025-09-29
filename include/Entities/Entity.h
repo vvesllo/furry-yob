@@ -15,7 +15,8 @@ enum class EntityType
 class Entity : public DynamicBody
 {
 private:
-    size_t m_moving_frames_amount;
+    size_t m_moving_frames;
+    float m_invincibility_time;
     
 protected:
 
@@ -35,9 +36,11 @@ protected:
         EntityType type;
         LookingDirection looking_direction;
         float health_points;
+        float max_health_points;
     } entity_data;
     
     virtual void AI(const float& dt)=0;
+    void dash(const sf::Vector2f& direction);
     void lookAt(const LookingDirection direction);
 
 public:
@@ -47,7 +50,10 @@ public:
     void update(const float& dt) override;
     
     const EntityType getType();
+    const sf::Vector2f getVelocity();
 
     void damage(const float& damage_amount);
     void heal(const float& heal_amount);
+
+    bool isInvincible();
 };

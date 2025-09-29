@@ -8,6 +8,10 @@
 #include "../Entities/Entity.h"
 
 
+template<typename T>
+concept TEntity = std::is_base_of_v<Entity, T>;
+
+
 class EntityManager
 {
 private:
@@ -23,20 +27,22 @@ public:
 	EntityManager(const EntityManager& other) = delete;
 	EntityManager& operator=(const EntityManager& other) = delete;
 
-	static EntityManager& getInstance();
-
-    template<class TEntity>
+    static EntityManager& getInstance();
+    
+    template<class T> requires TEntity<T>
     void newEntity(const sf::Vector2f& position)
     {
-        m_entities.emplace_back(std::make_unique<TEntity>(position));
+        m_entities.emplace_back(std::make_unique<T>(position));
     }
 
     void newProjectile(
         DynamicBody* sender,
-        const ProjectileType type,
-        const sf::Vector2f& position,
+        const std::string& texture_name,
+        const sf::FloatRect& rect,
         const sf::Vector2f& direction,
-        const float& speed);
+        const float& speed,
+        const float& life_time,
+        const bool piercing);
 
     void update(const float& dt);
     void draw(std::unique_ptr<sf::RenderWindow>& target);

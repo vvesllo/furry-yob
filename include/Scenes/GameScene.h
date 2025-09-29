@@ -9,6 +9,11 @@ private:
     std::unique_ptr<sf::RenderWindow>& m_window;
     float m_calm_time;
     float m_max_calm_time;
+    sf::View m_view;
+
+    std::unique_ptr<sf::Text> m_wave_label;
+
+    size_t m_wave;
 
     void spawnEnemies();
 

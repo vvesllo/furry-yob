@@ -4,6 +4,7 @@
 
 
 DynamicBody::DynamicBody(const std::string& texture_name, const sf::Color& color, const sf::FloatRect& rect)
+    : m_color(color)
 {
     sprite = std::make_unique<sf::Sprite>(*ResourceManager::getInstance().getTexture(texture_name));
     sprite->setOrigin(sprite->getGlobalBounds().size / 2.f);
@@ -51,4 +52,9 @@ void DynamicBody::destroy()
 const bool DynamicBody::isActive()
 {
     return m_is_active;
+}
+
+const sf::Color DynamicBody::getColor()
+{
+    return m_color;
 }

@@ -3,13 +3,15 @@
 
 #include "../../../include/Core/InputManager.h"
 #include "../../../include/Core/EntityManager.h"
+#include "../../../include/Core/ColorManager.h"
 
 
 Enemy001::Enemy001(const sf::Vector2f& position)
-    : Entity("enemy_001", sf::Color::Green , {
-        position, 
-        { 14, 16 }
-    })
+    : Entity(
+        "enemy_001", 
+        ColorManager::getInstance().getColors().enemy,
+        { position, { 14, 16 } }
+    )
 {
     entity_data.acceleration = 50.f;
     entity_data.speed = 60.f;

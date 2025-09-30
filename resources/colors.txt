@@ -1,0 +1,4 @@
+player      0xFF0000FF
+enemy       0x00FF00FF
+ground      0x0000FFFF
+background  0xFFFF00FF

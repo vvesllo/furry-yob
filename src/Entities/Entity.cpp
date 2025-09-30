@@ -65,7 +65,7 @@ void Entity::lookAt(const LookingDirection direction)
 
 void Entity::dash(const sf::Vector2f& direction)
 {
-    m_invincibility_time = .1f;
+    m_invincibility_time = .2f;
     velocity.current = direction;
 }
 

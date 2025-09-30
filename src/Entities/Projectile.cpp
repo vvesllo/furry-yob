@@ -6,8 +6,8 @@
 
 
 Projectile::Projectile(
-    const sf::FloatRect& rect, 
     DynamicBody* sender,
+    const sf::FloatRect& rect, 
     const std::string& texture_name,
     const sf::Vector2f& direction,
     const float& life_time,

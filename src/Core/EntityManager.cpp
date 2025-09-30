@@ -29,12 +29,29 @@ void EntityManager::newProjectile(
 {
     m_projectiles.emplace_back(
         std::make_unique<Projectile>(
-        rect,
-        sender,
-        texture_name,
-        direction * speed,
-        life_time,
-        piercing
+            sender,
+            rect,
+            texture_name,
+            direction * speed,
+            life_time,
+            piercing
+        )
+    );
+}
+
+
+void EntityManager::newHitscan(
+    DynamicBody* sender,
+    const sf::Vector2f& position,
+    const sf::Vector2f& direction,
+    const bool piercing)
+{
+    m_hitscans.emplace_back(
+        std::make_unique<Hitscan>(
+            sender,
+            position,
+            direction,
+            piercing
         )
     );
 }
@@ -65,12 +82,30 @@ void EntityManager::update(const float& dt)
 {
     forEachUpdate(m_entities, dt);
     forEachUpdate(m_projectiles, dt);
+    
+    for (int i=0; i < m_hitscans.size(); )
+    {
+        if (m_hitscans[i]->isActive())
+        {
+            m_hitscans[i]->update(dt);
+            ++i;
+        }
+        else
+        {   
+            m_hitscans.erase(m_hitscans.begin() + i);
+        }
+    }
 }
 
 void EntityManager::draw(std::unique_ptr<sf::RenderWindow>& target)
 {
     forEachDraw(m_entities, target);
     forEachDraw(m_projectiles, target);
+
+    for (int i=0; i < m_hitscans.size(); ++i)
+    {
+        m_hitscans[i]->draw(target);
+    }
 }
 
 std::vector<std::unique_ptr<DynamicBody>>& EntityManager::getEntities()

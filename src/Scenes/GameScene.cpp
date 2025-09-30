@@ -12,6 +12,7 @@
 #include "../../include/Core/LevelManager.h"
 #include "../../include/Core/InputManager.h"
 #include "../../include/Core/ResourceManager.h"
+#include "../../include/Core/ColorManager.h"
 
 #include "../../include/Utils/Vector.h"
 
@@ -30,7 +31,7 @@ GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
 		32
 	);
 	m_wave_label->setPosition(sf::Vector2f(150, 30));
-	m_wave_label->setFillColor(sf::Color::Red);
+	m_wave_label->setFillColor(ColorManager::getInstance().getColors().player);
 
 
 	m_max_calm_time = 5.f;
@@ -43,7 +44,7 @@ GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
 	m_view.setCenter({0, 0});
 	m_view.zoom(.6f);
 	
-	m_wave = 1;
+	m_wave = 0;
 }
 
 GameScene::~GameScene()
@@ -126,7 +127,7 @@ void GameScene::update(const float& dt)
 
 void GameScene::draw()
 {
-	m_window->clear(sf::Color(0x28'4A'5F'FF));
+	m_window->clear(ColorManager::getInstance().getColors().background);
 
 	LevelManager::getInstance().draw(m_window);
 	EntityManager::getInstance().draw(m_window);
@@ -136,7 +137,7 @@ void GameScene::draw()
 	std::unique_ptr<sf::Sprite>& player_icon = LevelManager::getInstance().getPlayerIcon();
 	
 	// todo: fix this piece of fucking garbage
-	player_icon->setColor(sf::Color::Red);
+	player_icon->setColor(ColorManager::getInstance().getColors().player);
 	player_icon->setPosition(sf::Vector2f(150, 100));
 	
 	m_window->draw(*m_wave_label);
@@ -159,20 +160,20 @@ void GameScene::spawnEnemies()
 			16 * (12.5f - rand() % 26),
 			16 * (12.5f - rand() % 26) 
 		};
-		if (rand() % 13 == 0)
+		
+		if (rand() % 11 == 0)
 		{
 			EntityManager::getInstance().newEntity<Enemy003>(position);
-			points -= 13;
-		} 
-		else if (rand() % 11 == 0)
-		{
-			EntityManager::getInstance().newEntity<Enemy002>(position);
 			points -= 11;
 		} 
 		else if (rand() % 5 == 0)
 		{
-			EntityManager::getInstance().newEntity<Enemy001>(position);
-			points -= 5;
+			if (rand() % 2 == 0)
+				EntityManager::getInstance().newEntity<Enemy002>(position);
+			else
+				EntityManager::getInstance().newEntity<Enemy001>(position);
+			
+				points -= 5;
 		} 
 		else
 		{

@@ -5,14 +5,16 @@
 #include "../../include/Core/InputManager.h"
 #include "../../include/Core/EntityManager.h"
 #include "../../include/Core/LevelManager.h"
+#include "../../include/Core/ColorManager.h"
 
 #include <print>
 
 Player::Player(const sf::Vector2f& position)
-    : Entity("player", sf::Color::Red, {
-        position, 
-        { 12, 16 }
-    })
+    : Entity(
+        "player", 
+        ColorManager::getInstance().getColors().player,
+        { position, { 12, 16 } }
+    )
 {
     entity_data.acceleration = 10.f;
     entity_data.speed = 160.f;
@@ -41,18 +43,15 @@ void Player::AI(const float& dt)
     if (m_dash_cooldown == 0.f && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) 
     {
         dash(velocity.terminal * 5.f);
-        m_dash_cooldown = .6f;
+        m_dash_cooldown = 1.f;
     }
 
     if (m_shoot_cooldown == 0.f && InputManager::getInstance().getMouse().left_button)
     {
-        EntityManager::getInstance().newProjectile(
+        EntityManager::getInstance().newHitscan(
             (DynamicBody*)this,
-            "projectile",
-            sf::FloatRect{ getCenter(), { 5, 5 } },
+            getCenter(),
             mouse_direction,
-            300.f,
-            5.f,
             false
         );
         m_shoot_cooldown = .2f;

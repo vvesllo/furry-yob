@@ -1,5 +1,6 @@
 #include "../../include/Core/LevelManager.h"
 #include "../../include/Core/ResourceManager.h"
+#include "../../include/Core/ColorManager.h"
 
 #include "../../include/Entities/Projectile.h"
 #include "../../include/Entities/Entity.h"
@@ -10,7 +11,7 @@
 LevelManager::LevelManager()
 {
     m_tile_sprite = std::make_unique<sf::Sprite>(*ResourceManager::getInstance().getTexture("tile"));
-    m_tile_sprite->setColor(sf::Color::Blue);
+    m_tile_sprite->setColor(ColorManager::getInstance().getColors().ground);
     m_size = { 25, 25 };
     m_level.clear();
     

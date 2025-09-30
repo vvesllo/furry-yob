@@ -6,6 +6,7 @@
 #include "DynamicBody.h"
 #include "../Entities/Projectile.h"
 #include "../Entities/Entity.h"
+#include "../Entities/Hitscan.h"
 
 
 template<typename T>
@@ -17,6 +18,7 @@ class EntityManager
 private:
     std::vector<std::unique_ptr<DynamicBody>> m_entities;
     std::vector<std::unique_ptr<DynamicBody>> m_projectiles;
+    std::vector<std::unique_ptr<Hitscan>> m_hitscans;
 
     void forEachUpdate(std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies, const float& dt);
     void forEachDraw(std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies, std::unique_ptr<sf::RenderWindow>& target);
@@ -42,6 +44,12 @@ public:
         const sf::Vector2f& direction,
         const float& speed,
         const float& life_time,
+        const bool piercing);
+
+    void newHitscan(
+        DynamicBody* sender,
+        const sf::Vector2f& position,
+        const sf::Vector2f& direction,
         const bool piercing);
 
     void update(const float& dt);

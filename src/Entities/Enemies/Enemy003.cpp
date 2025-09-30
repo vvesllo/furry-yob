@@ -3,13 +3,15 @@
 
 #include "../../../include/Core/InputManager.h"
 #include "../../../include/Core/EntityManager.h"
+#include "../../../include/Core/ColorManager.h"
 
 
 Enemy003::Enemy003(const sf::Vector2f& position)
-    : Entity("enemy_003", sf::Color::Green , {
-        position, 
-        { 16, 16 }
-    })
+    : Entity(
+        "enemy_003", 
+        ColorManager::getInstance().getColors().enemy,
+        { position, { 16, 16 } }
+    )
 {
     entity_data.acceleration = 50.f;
     entity_data.speed = 80.f;
@@ -32,7 +34,7 @@ void Enemy003::AI(const float& dt)
     
     if (!target.has_value()) return;
 
-    const sf::Vector2f distance = (target->get()->getCenter() + ((Entity*)target->get().get())->getVelocity() * 35.f) - getCenter();
+    const sf::Vector2f distance = target->get()->getCenter() - getCenter();
     
     m_staying = false;
     if (distance.length() > 300.f)       velocity.terminal = distance;
@@ -41,17 +43,14 @@ void Enemy003::AI(const float& dt)
     
     if (m_staying && m_shoot_cooldown == 0.f)
     {
-        EntityManager::getInstance().newProjectile(
+        EntityManager::getInstance().newHitscan(
             (DynamicBody*)this,
-            "projectile",
-            sf::FloatRect{ getCenter(), { 5, 5 } },
+            getCenter(),
             distance.normalized(),
-            800.f,
-            5.f,
             true
         );
         
-        m_shoot_cooldown = 1.f;
+        m_shoot_cooldown = 2.f;
     }
 
     m_shoot_cooldown = std::max(m_shoot_cooldown - dt, 0.f);

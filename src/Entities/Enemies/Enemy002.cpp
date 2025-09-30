@@ -3,16 +3,18 @@
 
 #include "../../../include/Core/InputManager.h"
 #include "../../../include/Core/EntityManager.h"
+#include "../../../include/Core/ColorManager.h"
 
 
 Enemy002::Enemy002(const sf::Vector2f& position)
-    : Entity("enemy_002", sf::Color::Green , {
-        position, 
-        { 15, 16 }
-    })
+    : Entity(
+        "enemy_002", 
+        ColorManager::getInstance().getColors().enemy,
+        { position, { 15, 16 } }
+    )
 {
     entity_data.acceleration = 5.f;
-    entity_data.speed = 200.f;
+    entity_data.speed = 150.f;
     entity_data.type = EntityType::Enemy;
 
     entity_data.max_health_points = 7;
@@ -37,7 +39,7 @@ void Enemy002::AI(const float& dt)
     
     velocity.terminal = distance;
 
-    m_shooting = distance.length() < 100.f;
+    m_shooting = distance.length() < 80.f;
     
     if (m_shooting && m_shoot_cooldown == 0.f)
     {

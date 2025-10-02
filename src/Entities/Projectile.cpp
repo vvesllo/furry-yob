@@ -11,24 +11,27 @@ Projectile::Projectile(
     const std::string& texture_name,
     const sf::Vector2f& direction,
     const float& life_time,
-    const bool& piercing
+    const bool& piercing,
+        std::function<void(Projectile*)> ai
 ) : DynamicBody(texture_name, 
                 sender->getColor(),
                 rect), 
     m_sender{ sender },
-    m_piercing{ piercing }
+    m_piercing{ piercing },
+    m_ai{ ai }
 { 
     m_life_time = life_time;
     m_direction = direction;
+    
+    velocity.current = direction;
 }
 
 Projectile::~Projectile()
 {
 }
 
-void Projectile::AI(const float& dt)
+void Projectile::checkHit()
 {
-    velocity.current = m_direction;
     std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies = EntityManager::getInstance().getEntities();
     
     for (int i=0; i < dynamic_bodies.size(); ++i)
@@ -50,11 +53,18 @@ void Projectile::AI(const float& dt)
     }
 }
 
+void Projectile::AI(const float& dt)
+{
+    m_ai(this);
+}
+
 void Projectile::update(const float& dt)
 {
     if (m_life_time > 0.f) 
     {
         AI(dt);
+        checkHit();
+
         rect.position += velocity.current * dt;
         sprite->setPosition(rect.position + rect.size / 2.f);
         m_life_time -= dt;

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <functional>
 
 #include "../Core/DynamicBody.h"
 #include "Entity.h"
+
 
 
 
@@ -15,7 +17,10 @@ private:
     const bool m_piercing;
     
     DynamicBody* m_sender;
+    std::function<void(Projectile*)> m_ai;
     
+    void checkHit();
+
 public:
     Projectile(
         DynamicBody* sender,
@@ -23,7 +28,8 @@ public:
         const std::string& texture_name,
         const sf::Vector2f& direction,
         const float& life_time,
-        const bool& piercing
+        const bool& piercing,
+        std::function<void(Projectile*)> ai
     );
     ~Projectile();
     

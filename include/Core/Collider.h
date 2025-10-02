@@ -3,8 +3,8 @@
 #include <SFML/Graphics.hpp>
 
 enum class ColliderType {
-    None,
-    Solid
+    Empty,
+    Ground
 };
 
 class Collider

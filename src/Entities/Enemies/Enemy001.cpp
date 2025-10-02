@@ -14,7 +14,7 @@ Enemy001::Enemy001(const sf::Vector2f& position)
     )
 {
     entity_data.acceleration = 50.f;
-    entity_data.speed = 60.f;
+    entity_data.speed = 80.f;
     entity_data.type = EntityType::Enemy;
 
     entity_data.max_health_points = 10;
@@ -47,12 +47,13 @@ void Enemy001::AI(const float& dt)
         {
             EntityManager::getInstance().newProjectile(
                 (DynamicBody*)this,
-                "projectile",
+                "projectile_bullet",
                 sf::FloatRect{ getCenter(), { 5, 5 } },
                 distance.normalized().rotatedBy(sf::degrees(5 * i)),
-                200.f,
+                400.f,
                 5.f,
-                false
+                false,
+                [](Projectile* projectile) {}
             );
         }
         

@@ -3,9 +3,11 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include "../Core/DynamicBody.h"
+#include "../Core/Collider.h"
 #include "Projectile.h"
 
-enum class EntityType
+
+enum class EntityType : short
 {
     Player,
     Enemy,
@@ -18,9 +20,19 @@ private:
     size_t m_moving_frames;
     float m_invincibility_time;
     
+    enum class ColliderCheckAxis : short
+    {
+        X, Y
+    };
+    
+    void checkColliding(const ColliderCheckAxis& axis);
+    void checkCollidingX(const std::unique_ptr<Collider>& collider);
+    void checkCollidingY(const std::unique_ptr<Collider>& collider);
+
 protected:
 
-    enum class LookingDirection {
+    enum class LookingDirection : short
+    {
         Left,
         Right,
     };
@@ -38,7 +50,7 @@ protected:
         float health_points;
         float max_health_points;
     } entity_data;
-    
+
     virtual void AI(const float& dt)=0;
     void dash(const sf::Vector2f& direction);
     void lookAt(const LookingDirection direction);

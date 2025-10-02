@@ -2,16 +2,17 @@
 
 ResourceManager::ResourceManager()
 {
-	loadTexture("player", "resources/player.png");
 	loadTexture("tile", "resources/tile.png");
 	
-	loadTexture("enemy_000", "resources/enemies/enemy_000.png");
-	loadTexture("enemy_001", "resources/enemies/enemy_001.png");
-	loadTexture("enemy_002", "resources/enemies/enemy_002.png");
-	loadTexture("enemy_003", "resources/enemies/enemy_003.png");
+	loadTexture("player", 	 "resources/entities/player.png");
+	loadTexture("enemy_000", "resources/entities/enemy_000.png");
+	loadTexture("enemy_001", "resources/entities/enemy_001.png");
+	loadTexture("enemy_002", "resources/entities/enemy_002.png");
+	loadTexture("enemy_003", "resources/entities/enemy_003.png");
+	loadTexture("enemy_004", "resources/entities/enemy_004.png");
 	
-	loadTexture("projectile", "resources/projectile.png");
-	loadTexture("projectile_fire", "resources/projectile_fire.png");
+	loadTexture("projectile_bullet", "resources/projectiles/bullet.png");
+	loadTexture("projectile_fire",   "resources/projectiles/fire.png");
 
 	loadTexture("life_1", "resources/life-icons/1.png");
 	loadTexture("life_2", "resources/life-icons/2.png");

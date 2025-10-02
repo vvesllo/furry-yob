@@ -1,4 +1,4 @@
-player      0xFF0000FF
-enemy       0x00FF00FF
-ground      0x0000FFFF
-background  0xFFFF00FF
+player      0xFF258CFF
+enemy       0x93FF25FF
+ground      0x252EFFFF
+background  0xFFAE25FF

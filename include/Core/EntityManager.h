@@ -44,7 +44,9 @@ public:
         const sf::Vector2f& direction,
         const float& speed,
         const float& life_time,
-        const bool piercing);
+        const bool piercing,
+        std::function<void(Projectile*)> ai
+    );
 
     void newHitscan(
         DynamicBody* sender,

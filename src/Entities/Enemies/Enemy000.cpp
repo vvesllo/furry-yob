@@ -43,14 +43,18 @@ void Enemy000::AI(const float& dt)
     
     if (m_staying && m_shoot_cooldown == 0.f)
     {
-        EntityManager::getInstance().newHitscan(
+        EntityManager::getInstance().newProjectile(
             (DynamicBody*)this,
-            getCenter(),
+            "projectile_bullet",
+            {getCenter(), {5, 5}},
             distance.normalized().rotatedBy(sf::degrees(10 - rand() % 21)),
-            true
+            400.f,
+            3.f,
+            true,
+            [](Projectile* projectile) {}
         );
         
-        m_shoot_cooldown = .5f;
+        m_shoot_cooldown = .3f;
     }
 
     m_shoot_cooldown = std::max(m_shoot_cooldown - dt, 0.f);

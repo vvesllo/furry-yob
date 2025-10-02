@@ -10,7 +10,8 @@ class LevelManager
 {
 private: 
     sf::Vector2u m_size;
-    std::vector<std::unique_ptr<Collider>> m_level;
+    std::vector<std::unique_ptr<Collider>> m_colliders;
+    std::vector<sf::Vector2f> m_spawn_points;
     std::unique_ptr<sf::Sprite> m_tile_sprite;
     std::unique_ptr<sf::RenderTexture> m_blood;
     std::unique_ptr<sf::Sprite> m_blood_sprite;
@@ -26,6 +27,7 @@ public:
 
     void load(const std::string& name);
     const std::vector<std::unique_ptr<Collider>>& get();
+    const std::vector<sf::Vector2f>& getSpawnPoints();
 
     void setPlayerIcon(const int hp);
     std::unique_ptr<sf::Sprite>& getPlayerIcon();

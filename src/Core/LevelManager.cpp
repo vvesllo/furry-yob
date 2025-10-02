@@ -12,18 +12,14 @@ LevelManager::LevelManager()
 {
     m_tile_sprite = std::make_unique<sf::Sprite>(*ResourceManager::getInstance().getTexture("tile"));
     m_tile_sprite->setColor(ColorManager::getInstance().getColors().ground);
-    m_size = { 25, 25 };
-    m_level.clear();
+
+    m_colliders.clear();
+    m_spawn_points.clear();
+
+    m_size = { 33, 33 };
     
-    m_blood = std::make_unique<sf::RenderTexture>(sf::Vector2u{ m_size.x * 16, m_size.y * 16 });
-    m_blood->clear(sf::Color(0, 0, 0, 0));
-
-    m_blood_sprite = std::make_unique<sf::Sprite>(m_blood->getTexture());
-    m_blood_sprite->setOrigin(m_blood_sprite->getGlobalBounds().size / 2.f);
-    m_blood_sprite->setColor(sf::Color(255, 255, 255, 150));
-
     m_player_icon = std::make_unique<sf::Sprite>(*ResourceManager::getInstance().getTexture("life_5"));
-    m_player_icon->setOrigin(m_player_icon->getGlobalBounds().size / 2.f);
+    m_player_icon->setOrigin(m_player_icon->getGlobalBounds().size / 2.f); 
     m_player_icon->setScale({4, 4});
 }
 
@@ -37,42 +33,62 @@ void LevelManager::load(const std::string& name)
 {
     std::ifstream file("resources/maps/" + name + ".txt");
     std::string line;
-
-    unsigned short y = 0;
     
     sf::FloatRect rect{ {0, 0}, { 16, 16 } };
     ColliderType type;
 
+    size_t columns, rows=0;
+
     while (file >> line)
     {
-        for (unsigned short x=0; x < line.length(); ++x)
+        size_t x = 0;
+        for (; x < line.length(); ++x)
         {
             rect.position.x = rect.size.x * (-(float)m_size.x / 2.f + x);
-            rect.position.y = rect.size.y * (-(float)m_size.y / 2.f + y);
+            rect.position.y = rect.size.y * (-(float)m_size.y / 2.f + rows);
 
             switch (line[x])
             {
             case '0':
-                type = ColliderType::None;
+                type = ColliderType::Empty;
                 break;
+            case '2':
+                m_spawn_points.push_back(rect.position);
             case '1':
-                type = ColliderType::Solid;
+                type = ColliderType::Ground;
                 break;
             }
 
-            m_level.emplace_back(
+            m_colliders.emplace_back(
                 std::make_unique<Collider>(rect, type)
             );
         }
-        ++y;
+        ++rows;
+        columns = std::max(columns, x);
     }
-
+    
     file.close();
+    
+    m_size.x = rows;
+    m_size.y = columns;
+
+    
+    m_blood = std::make_unique<sf::RenderTexture>(sf::Vector2u{ m_size.x * 16, m_size.y * 16 });
+    m_blood->clear(sf::Color(0, 0, 0, 0));
+
+    m_blood_sprite = std::make_unique<sf::Sprite>(m_blood->getTexture());
+    m_blood_sprite->setOrigin(m_blood_sprite->getGlobalBounds().size / 2.f);
+    m_blood_sprite->setColor(sf::Color(255, 255, 255, 150));
+}
+
+const std::vector<sf::Vector2f>& LevelManager::getSpawnPoints()
+{
+    return m_spawn_points;
 }
 
 const std::vector<std::unique_ptr<Collider>>& LevelManager::get()
 {
-    return m_level;
+    return m_colliders;
 }
 
 const sf::Vector2u& LevelManager::getSize()
@@ -106,11 +122,11 @@ void LevelManager::addBlood(const sf::Vector2f& position, const sf::Color& color
 
 void LevelManager::draw(std::unique_ptr<sf::RenderWindow>& target)
 {	
-	for (size_t i=0; i < m_level.size(); ++i)
+	for (size_t i=0; i < m_colliders.size(); ++i)
 	{
-		if (m_level[i]->getType() == ColliderType::Solid)
+		if (m_colliders[i]->getType() == ColliderType::Ground)
 		{
-			m_tile_sprite->setPosition(m_level[i]->getRect().position);
+			m_tile_sprite->setPosition(m_colliders[i]->getRect().position);
 			target->draw(*m_tile_sprite);
         }
     }

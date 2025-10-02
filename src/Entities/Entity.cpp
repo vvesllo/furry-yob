@@ -4,6 +4,7 @@
 #include "../../include/Core/EntityManager.h"
 #include "../../include/Core/LevelManager.h"
 
+
 #include <print>
 
 Entity::Entity(const std::string& texture_name, const sf::Color& color, const sf::FloatRect& rect)
@@ -39,7 +40,11 @@ void Entity::update(const float& dt)
     else
         ++m_moving_frames;
 
-    rect.position += entity_data.speed * velocity.current * dt;
+    rect.position.x += entity_data.speed * velocity.current.x * dt;
+    checkColliding(ColliderCheckAxis::X);
+
+    rect.position.y += entity_data.speed * velocity.current.y * dt;
+    checkColliding(ColliderCheckAxis::Y);
     
     sprite->setRotation(sf::degrees(current_speed * additional_transformation_value * 10.f));
     sprite->setPosition(
@@ -65,7 +70,7 @@ void Entity::lookAt(const LookingDirection direction)
 
 void Entity::dash(const sf::Vector2f& direction)
 {
-    m_invincibility_time = .2f;
+    m_invincibility_time = .5f;
     velocity.current = direction;
 }
 
@@ -76,7 +81,7 @@ const EntityType Entity::getType()
 
 void Entity::damage(const float& damage_amount)
 {
-    m_invincibility_time = .05f;
+    m_invincibility_time = .2f;
     entity_data.health_points -= damage_amount;
 
     LevelManager::getInstance().addBlood(getCenter(), m_color);
@@ -98,4 +103,50 @@ bool Entity::isInvincible()
 const sf::Vector2f Entity::getVelocity()
 {
     return velocity.current;
+}
+
+void Entity::checkColliding(const ColliderCheckAxis& axis)
+{
+    const std::vector<std::unique_ptr<Collider>>& colliders = LevelManager::getInstance().get();
+    for (size_t i=0; i < colliders.size(); ++i)
+    {
+        if (colliders[i]->getRect().findIntersection(rect) && colliders[i]->getType() == ColliderType::Empty)
+        {
+            switch (axis)
+            {
+                case ColliderCheckAxis::X: checkCollidingX(colliders[i]); break;
+                case ColliderCheckAxis::Y: checkCollidingY(colliders[i]); break;
+            }
+        }
+    }
+}
+
+void Entity::checkCollidingX(const std::unique_ptr<Collider>& collider)
+{
+    if (velocity.current.x > 0)
+    {
+        velocity.current.x = 0;
+        rect.position.x = collider->getRect().position.x - rect.size.x;
+    }
+    
+    else if (velocity.current.x < 0)
+    {
+        velocity.current.x = 0;
+        rect.position.x = collider->getRect().position.x + collider->getRect().size.x;
+    }
+}
+
+void Entity::checkCollidingY(const std::unique_ptr<Collider>& collider)
+{
+    if (velocity.current.y > 0)
+    {
+        velocity.current.y = 0;
+        rect.position.y = collider->getRect().position.y - rect.size.y;
+    }
+    
+    else if (velocity.current.y < 0)
+    {
+        velocity.current.y = 0;
+        rect.position.y = collider->getRect().position.y + collider->getRect().size.y;
+    }
 }

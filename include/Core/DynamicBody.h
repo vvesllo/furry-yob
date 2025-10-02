@@ -15,6 +15,8 @@ protected:
     const sf::Color m_color;
     
     
+public:
+
     struct {
         sf::Vector2f terminal;
         sf::Vector2f current;
@@ -22,7 +24,6 @@ protected:
 
 
 
-public:
     DynamicBody(const std::string& texture_name, const sf::Color& color, const sf::FloatRect& rect);
     virtual ~DynamicBody()=default;
 

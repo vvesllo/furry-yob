@@ -3,6 +3,8 @@
 #include "../Core/Scene.h"
 #include "../Core/DynamicBody.h"
 
+#include <functional>
+
 class GameScene : public Scene
 {
 private:
@@ -14,6 +16,8 @@ private:
     std::unique_ptr<sf::Text> m_wave_label;
 
     size_t m_wave;
+
+    DynamicBody* m_player;
 
     void spawnEnemies();
 

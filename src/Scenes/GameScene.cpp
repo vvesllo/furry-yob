@@ -7,6 +7,7 @@
 #include "../../include/Entities/Enemies/Enemy001.h"
 #include "../../include/Entities/Enemies/Enemy002.h"
 #include "../../include/Entities/Enemies/Enemy003.h"
+#include "../../include/Entities/Enemies/Enemy004.h"
 
 #include "../../include/Core/EntityManager.h"
 #include "../../include/Core/LevelManager.h"
@@ -23,7 +24,7 @@ GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
 	srand(time(NULL));
 
 	EntityManager::getInstance().newEntity<Player>(sf::Vector2f{ 0, 0 });
-	LevelManager::getInstance().load("map1");
+	LevelManager::getInstance().load("map_000");
 	
 	m_wave_label = std::make_unique<sf::Text>(
 		*ResourceManager::getInstance().getFont("basis33"),
@@ -42,9 +43,11 @@ GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
 		(sf::Vector2f)m_window->getSize()
 	});
 	m_view.setCenter({0, 0});
-	m_view.zoom(.6f);
+	m_view.zoom(.5f);
 	
 	m_wave = 0;
+
+	m_player = EntityManager::getInstance().findEntityByType(EntityType::Player)->get().get();
 }
 
 GameScene::~GameScene()
@@ -57,10 +60,6 @@ void GameScene::pollEvent(const std::optional<sf::Event>& event)
 	if (event->is<sf::Event::Closed>())
 	{
 		m_window->close();
-	}
-	else if (event->is<sf::Event::MouseMoved>())
-	{
-		InputManager::getInstance().getMouse().position = m_window->mapPixelToCoords(event->getIf<sf::Event::MouseMoved>()->position);
 	}
 	else if (event->is<sf::Event::MouseButtonPressed>())
 	{
@@ -90,10 +89,12 @@ void GameScene::pollEvent(const std::optional<sf::Event>& event)
 
 void GameScene::update(const float& dt)
 {
+	InputManager::getInstance().getMouse().position = m_window->mapPixelToCoords(sf::Mouse::getPosition(*m_window));
+	
 	m_view.setCenter(
 		VectorUtils::lerp(
 			m_view.getCenter(),
-			InputManager::getInstance().getMouse().position / 20.f,
+			m_player->getCenter() + InputManager::getInstance().getMouse().position / 20.f,
 			5.f * dt
 		)
 	);
@@ -154,14 +155,20 @@ void GameScene::spawnEnemies()
 
 	sf::Vector2f position;
 
+	const std::vector<std::unique_ptr<Collider>>& colliders = LevelManager::getInstance().get();
+	const std::vector<sf::Vector2f>& spawn_points = LevelManager::getInstance().getSpawnPoints();
+
 	while (points > 0)
 	{
-		position = sf::Vector2f{ 
-			16 * (12.5f - rand() % 26),
-			16 * (12.5f - rand() % 26) 
-		};
+		position = spawn_points[rand() % spawn_points.size()] + sf::Vector2f(8, 0).rotatedBy(sf::degrees(rand() % 360));
+	
 		
-		if (rand() % 11 == 0)
+		if (rand() % 29 == 0)
+		{
+			EntityManager::getInstance().newEntity<Enemy004>(position);
+			points -= 29;
+		} 
+		else if (rand() % 11 == 0)
 		{
 			EntityManager::getInstance().newEntity<Enemy003>(position);
 			points -= 11;
@@ -182,7 +189,7 @@ void GameScene::spawnEnemies()
 		}
 	}
 
-	// EntityManager::getInstance().newEntity<Enemy001>(sf::Vector2f{-100,  100 });
+	// EntityManager::getInstance().newEntity<Enemy004>(sf::Vector2f{-100,  100 });
 	// EntityManager::getInstance().newEntity<Enemy000>(sf::Vector2f{-100, -100 });
 	// EntityManager::getInstance().newEntity<Enemy002>(sf::Vector2f{ 100, -100 });
 }

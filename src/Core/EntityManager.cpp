@@ -24,7 +24,8 @@ void EntityManager::newProjectile(
     const sf::Vector2f& direction,
     const float& speed,
     const float& life_time,
-    const bool piercing
+    const bool piercing,
+    std::function<void(Projectile*)> ai
 )
 {
     m_projectiles.emplace_back(
@@ -34,7 +35,8 @@ void EntityManager::newProjectile(
             texture_name,
             direction * speed,
             life_time,
-            piercing
+            piercing,
+            ai
         )
     );
 }

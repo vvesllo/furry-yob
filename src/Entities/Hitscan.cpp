@@ -134,13 +134,6 @@ void Hitscan::defaultShoot(const sf::Vector2f& direction)
 
 void Hitscan::update(const float& dt)
 {
-    float k = 255.f * (m_life_time / m_max_life_time);
-    if (isActive())
-    {
-        // m_line[0].color.a = k;
-        // m_line[1].color.a = k;
-    }
-
     m_life_time -= dt;
 }
 

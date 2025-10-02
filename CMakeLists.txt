@@ -35,6 +35,7 @@ add_executable(
         src/Entities/Enemies/Enemy001.cpp   include/Entities/Enemies/Enemy001.h
         src/Entities/Enemies/Enemy002.cpp   include/Entities/Enemies/Enemy002.h
         src/Entities/Enemies/Enemy003.cpp   include/Entities/Enemies/Enemy003.h
+        src/Entities/Enemies/Enemy004.cpp   include/Entities/Enemies/Enemy004.h
 )
 
 find_package(SFML COMPONENTS Network Graphics Window Audio System CONFIG REQUIRED)

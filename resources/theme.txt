@@ -1,0 +1,8 @@
+theme violent
+
+color player        0x000000FF
+color enemy         0x000000FF
+color ground        0xF0F0F0FF
+color background    0xFFFFFFFF
+
+music resources/music/hear-the-siren-song-call-of-death.mp3

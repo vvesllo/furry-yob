@@ -15,12 +15,13 @@ private:
         Hyperbolic,
     };
     
-    float itemScaling(const ItemScalingType& scaling_type, const size_t& amount, const float& chance); 
+    float itemScaling(const ItemScalingType& scaling_type, const size_t& amount, const float& multiplier); 
     
 public:
     enum class ItemType : short
     {
-        Syringe
+        Adrenaline,
+        Feather
     };
 
     ItemManager();

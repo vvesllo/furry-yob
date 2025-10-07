@@ -4,12 +4,12 @@
 #include "include/Core/Managers/InputManager.h"
 #include "include/Core/Managers/EntityManager.h"
 #include "include/Core/Managers/LevelManager.h"
-#include "include/Core/Managers/ColorManager.h"
+#include "include/Core/Managers/ThemeManager.h"
 
 Player::Player(const sf::Vector2f& position)
     : Entity(
         "player", 
-        ColorManager::getInstance().getColors().player,
+        ThemeManager::getInstance().getTheme().player,
         { position, { 12, 16 } }
     )
 {
@@ -27,8 +27,6 @@ Player::Player(const sf::Vector2f& position)
     data.speed = 100.f;
 
     regist(data);
-
-    // giveItem(ItemManager::ItemType::Syringe);
 }
 
 void Player::AI(const float& dt)
@@ -40,8 +38,22 @@ void Player::AI(const float& dt)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) velocity.terminal.y -= 1;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) velocity.terminal.y += 1;
     
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) 
+    {
+        auto& items = EntityManager::getInstance().getItems();
+        for (size_t i=0; i < items.size(); ++i)
+        {
+            if (items[i]->getRect().findIntersection(getRect()))
+            {
+                EntityManager::getInstance().addItem(((Item*)items[i].get())->getType());
+                items.erase(items.cbegin() + i);
+            }
+        }
+    }
+    
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) 
         dash(velocity.terminal * 5.f);
+
 
     if (InputManager::getInstance().getMouse().left_button) 
         shootHitscan(getCenter(), mouse_direction, false);

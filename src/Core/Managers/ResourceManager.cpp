@@ -19,7 +19,10 @@ ResourceManager::ResourceManager()
 	loadTexture("life_3", "resources/life-icons/3.png");
 	loadTexture("life_4", "resources/life-icons/4.png");
 	loadTexture("life_5", "resources/life-icons/5.png");
-
+	
+	loadTexture("adrenaline", "resources/items/adrenaline.png");
+	loadTexture("feather", "resources/items/feather.png");
+	
 	loadFont("basis33", "resources/fonts/basis33/basis33.ttf");
 }
 

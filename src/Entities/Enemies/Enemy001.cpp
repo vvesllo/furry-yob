@@ -3,15 +3,15 @@
 
 #include "include/Core/Managers/InputManager.h"
 #include "include/Core/Managers/EntityManager.h"
-#include "include/Core/Managers/ColorManager.h"
+#include "include/Core/Managers/ThemeManager.h"
 
 
 
 Enemy001::Enemy001(const sf::Vector2f& position)
     : Entity(
         "enemy_001", 
-        ColorManager::getInstance().getColors().enemy,
-        { position, { 14, 16 } }
+        ThemeManager::getInstance().getTheme().enemy,
+        { position, { 16, 16 } }
     )
 {
     EntityData data;

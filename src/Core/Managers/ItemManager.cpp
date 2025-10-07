@@ -4,9 +4,17 @@
 
 ItemManager::ItemManager()
 {
-    m_item_functions[ItemType::Syringe] = [=](Entity* entity, const size_t& amount) {
+    m_item_functions[ItemType::Adrenaline] = [=](Entity* entity, const size_t& amount) {
         entity->entity_data.shot_delay = entity->m_static_entity_data.shot_delay * itemScaling(ItemScalingType::Hyperbolic, amount, 0.10f); // 10% proc chance
     };
+    m_item_functions[ItemType::Feather] = [=](Entity* entity, const size_t& amount) {
+        entity->entity_data.speed = entity->m_static_entity_data.speed * (1 + itemScaling(ItemScalingType::Linear, amount, 0.10f)); // 10% proc chance
+    };
+    /*
+    m_item_functions[ItemType::Adrenaline] = [=](Entity* entity, const size_t& amount) {
+        entity->entity_data.speed = entity->m_static_entity_data.speed * itemScaling(ItemScalingType::Linear, amount, 0.10f); // 10% proc chance
+    };
+    */
 }
 
 ItemManager& ItemManager::getInstance()
@@ -20,12 +28,12 @@ void ItemManager::update(Entity* entity, const size_t& amount, const ItemType& t
     m_item_functions[type](entity, amount);
 }
 
-float ItemManager::itemScaling(const ItemScalingType& scaling_type, const size_t& amount, const float& chance)
+float ItemManager::itemScaling(const ItemScalingType& scaling_type, const size_t& amount, const float& multiplier)
 {
     switch (scaling_type)
     {
-    case ItemScalingType::Hyperbolic: return 1.f / (1.f + amount * chance);
+    case ItemScalingType::Hyperbolic: return 1.f / (1.f + amount * multiplier);
     case ItemScalingType::Linear:
-    default: return amount * chance;
+    default: return amount * multiplier;
     }
 }

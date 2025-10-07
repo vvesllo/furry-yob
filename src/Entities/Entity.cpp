@@ -56,16 +56,10 @@ void Entity::update(const float& dt)
     
 void Entity::updateItems()
 {
-    for (const auto& item : items)
+    for (const auto& item : EntityManager::getInstance().getInventory())
     {
         ItemManager::getInstance().update(this, item.second, item.first);
     }
-}
-
-void Entity::giveItem(const ItemManager::ItemType& type)
-{
-    if (!items.contains(type)) items[type] = 0;
-    ++items[type];
 }
 
 void Entity::checkColliding(const ColliderCheckAxis& axis)

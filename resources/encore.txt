@@ -1,0 +1,8 @@
+theme encore
+
+color player        0x000000FF
+color enemy         0x000000FF
+color ground        0x6BB241FF
+color background    0x93EC57FF
+
+music resources/music/a_part_falling.mp3

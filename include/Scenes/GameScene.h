@@ -4,6 +4,7 @@
 #include "include/Entities/DynamicBody.h"
 
 #include <functional>
+#include <SFML/Audio.hpp>
 
 class GameScene : public Scene
 {
@@ -13,6 +14,8 @@ private:
     float m_max_calm_time;
     sf::View m_view;
 
+    bool m_item_spawned;
+
     std::unique_ptr<sf::Text> m_wave_label;
 
     size_t m_wave;
@@ -20,6 +23,7 @@ private:
     DynamicBody* m_player;
 
     void spawnEnemies();
+    void spawnItem();
 
 public:
     GameScene(std::unique_ptr<sf::RenderWindow>& window);

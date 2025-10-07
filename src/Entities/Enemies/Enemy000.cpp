@@ -3,14 +3,14 @@
 
 #include "include/Core/Managers/InputManager.h"
 #include "include/Core/Managers/EntityManager.h"
-#include "include/Core/Managers/ColorManager.h"
+#include "include/Core/Managers/ThemeManager.h"
 
 #include <print>
 
 Enemy000::Enemy000(const sf::Vector2f& position)
     : Entity(
         "enemy_000", 
-        ColorManager::getInstance().getColors().enemy,
+        ThemeManager::getInstance().getTheme().enemy,
         { position, { 14, 16 } }
     )
 {
@@ -32,6 +32,7 @@ Enemy000::Enemy000(const sf::Vector2f& position)
 
 void Enemy000::AI(const float& dt)
 {
+
     const auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
     if (!target) return;
     m_distance = target->get()->getCenter() - getCenter();

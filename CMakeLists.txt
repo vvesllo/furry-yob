@@ -17,7 +17,7 @@ add_executable(
         src/Core/Managers/SceneManager.cpp          include/Core/Managers/SceneManager.h
         src/Core/Managers/ResourceManager.cpp       include/Core/Managers/ResourceManager.h
         src/Core/Managers/InputManager.cpp          include/Core/Managers/InputManager.h
-        src/Core/Managers/ColorManager.cpp          include/Core/Managers/ColorManager.h
+        src/Core/Managers/ThemeManager.cpp          include/Core/Managers/ThemeManager.h
 
         src/Core/Collider.cpp                       include/Core/Collider.h
         src/Core/Hitscan.cpp                        include/Core/Hitscan.h
@@ -33,6 +33,7 @@ add_executable(
         src/Entities/Entity.cpp                     include/Entities/Entity.h
         src/Entities/Player.cpp                     include/Entities/Player.h
         src/Entities/Projectile.cpp                 include/Entities/Projectile.h
+        src/Entities/Item.cpp                       include/Entities/Item.h
 
         src/Entities/Enemies/Enemy000.cpp           include/Entities/Enemies/Enemy000.h
         src/Entities/Enemies/Enemy001.cpp           include/Entities/Enemies/Enemy001.h

@@ -29,9 +29,6 @@ protected:
         Right,
     };
 
-    // item :: amount
-    std::map<ItemManager::ItemType, size_t> items;
-    
     // current velocity linear interpolate to terminal
     struct {
         sf::Vector2f terminal;
@@ -88,9 +85,6 @@ protected:
     // sets looking direction from child class
     virtual const std::optional<LookingDirection> processDirection()=0;
     
-    // add 1 into map<..., size_t>
-    void giveItem(const ItemManager::ItemType& type);
-
 private:
 
     // data for items update

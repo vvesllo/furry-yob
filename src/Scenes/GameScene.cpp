@@ -13,7 +13,7 @@
 #include "include/Core/Managers/LevelManager.h"
 #include "include/Core/Managers/InputManager.h"
 #include "include/Core/Managers/ResourceManager.h"
-#include "include/Core/Managers/ColorManager.h"
+#include "include/Core/Managers/ThemeManager.h"
 
 #include "include/Utils/Vector.h"
 
@@ -32,8 +32,7 @@ GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
 		32
 	);
 	m_wave_label->setPosition(sf::Vector2f(150, 30));
-	m_wave_label->setFillColor(ColorManager::getInstance().getColors().player);
-
+	m_wave_label->setFillColor(ThemeManager::getInstance().getTheme().player);
 
 	m_max_calm_time = 5.f;
 	m_calm_time = m_max_calm_time;
@@ -48,6 +47,10 @@ GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
 	m_wave = 0;
 
 	m_player = EntityManager::getInstance().findEntityByType(EntityType::Player)->get().get();
+
+	m_item_spawned = false;
+	
+	ThemeManager::getInstance().playMusic();
 }
 
 GameScene::~GameScene()
@@ -100,7 +103,8 @@ void GameScene::update(const float& dt)
 	);
 	m_window->setView(m_view);
 	
-	
+	if (!m_player->isActive())
+		ThemeManager::getInstance().finishMusic(dt);
 
 	size_t enemy_amount = 0;
 	
@@ -109,6 +113,13 @@ void GameScene::update(const float& dt)
 		enemy_amount += (int)(((Entity*)entity.get())->getType() == EntityType::Enemy);
 	}
 	
+	
+	if (!m_item_spawned && enemy_amount == 0)
+	{
+		spawnItem();
+		m_item_spawned = true;
+	}
+
 	if (enemy_amount == 0)
 	{
 		if (m_calm_time < 0)
@@ -120,6 +131,7 @@ void GameScene::update(const float& dt)
 			);
 			spawnEnemies();
 		}
+		
 		m_calm_time -= dt;
 	}
 	
@@ -128,7 +140,7 @@ void GameScene::update(const float& dt)
 
 void GameScene::draw()
 {
-	m_window->clear(ColorManager::getInstance().getColors().background);
+	m_window->clear(ThemeManager::getInstance().getTheme().background);
 
 	LevelManager::getInstance().draw(m_window);
 	EntityManager::getInstance().draw(m_window);
@@ -138,7 +150,7 @@ void GameScene::draw()
 	std::unique_ptr<sf::Sprite>& player_icon = LevelManager::getInstance().getPlayerIcon();
 	
 	// todo: fix this piece of fucking garbage
-	player_icon->setColor(ColorManager::getInstance().getColors().player);
+	player_icon->setColor(ThemeManager::getInstance().getTheme().player);
 	player_icon->setPosition(sf::Vector2f(150, 100));
 	
 	m_window->draw(*m_wave_label);
@@ -149,8 +161,23 @@ void GameScene::draw()
 	m_window->display();
 }
 
+void GameScene::spawnItem()
+{
+	auto& item_textures = EntityManager::getInstance().getItemTextures();
+	auto it = item_textures.begin();
+    std::advance(it, rand() % item_textures.size());
+
+	ItemManager::ItemType type = (*it).first;
+
+	EntityManager::getInstance().newItem(
+		sf::Vector2f(30, 0).rotatedBy(sf::degrees(rand() % 360)),
+		type
+	);
+}
+
 void GameScene::spawnEnemies()
 {
+	m_item_spawned = false;
 	int points = std::pow(m_wave, 2);
 
 	sf::Vector2f position;

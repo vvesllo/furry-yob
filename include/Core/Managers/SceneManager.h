@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "Scene.h"
+#include "../../Scenes/Scene.h"
 
 
 class SceneManager

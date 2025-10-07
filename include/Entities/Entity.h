@@ -2,9 +2,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
-#include "../Core/DynamicBody.h"
-#include "../Core/Collider.h"
+#include <map>
+
+#include "DynamicBody.h"
 #include "Projectile.h"
+
+#include "../Core/Managers/ItemManager.h"
+#include "../Core/Collider.h"
 
 
 enum class EntityType : short
@@ -24,13 +28,18 @@ protected:
         Left,
         Right,
     };
+
+    // item :: amount
+    std::map<ItemManager::ItemType, size_t> items;
     
+    // current velocity linear interpolate to terminal
     struct {
         sf::Vector2f terminal;
         sf::Vector2f current;
     } velocity;
     
-    struct {
+    // entity data
+    struct EntityData {
         float shot_delay;
         
         float speed;
@@ -43,16 +52,24 @@ protected:
 
         float health_points;
         float max_health_points;
-    } entity_data;
+    };
 
-    virtual void AI(const float& dt)=0;
+    // entity_data
+    EntityData entity_data;
+
+    // register entity data
+    void regist(const EntityData& data);
+
+    // every move processing
     void movement(const float& dt);
-
-    void dash(const sf::Vector2f& direction);
-
-    virtual const bool preHit(Entity* sender);
     
+    // dashing by direction with invincibility time 
+    void dash(const sf::Vector2f& direction);
+    
+    // hitscan attack(ray)
     void shootHitscan(const sf::Vector2f& position, const sf::Vector2f& direction, const bool piercing);
+    
+    // projectile attack (virtual instanity 2:40 aahhhhhhhhhhhhhhhhh)
     void shootProjectile(
         const std::string& name, 
         const sf::FloatRect& rect, 
@@ -61,16 +78,29 @@ protected:
         const float& lifetime,
         const bool piercing,
         const std::function<void(Projectile*)> ai);
-    
-    virtual const std::optional<LookingDirection> processDirection() { return std::nullopt; };
-    void lookAt(const std::optional<LookingDirection>& direction);
 
+    // calls before entity get hit by sender
+    virtual const bool preHit(Entity* sender);
+    
+    // update function for children classes
+    virtual void AI(const float& dt)=0;
+
+    // sets looking direction from child class
+    virtual const std::optional<LookingDirection> processDirection()=0;
+    
+    // add 1 into map<..., size_t>
+    void giveItem(const ItemManager::ItemType& type);
 
 private:
+
+    // data for items update
+    EntityData m_static_entity_data;
+    // movement animation (lil jump + lil rotation)
     size_t m_moving_frames;
     
     bool m_shoot;
 
+    // INVINCIBLE
     float m_invincibility_time;
     
     float m_shoot_cooldown;
@@ -78,24 +108,32 @@ private:
 
     LookingDirection m_looking_direction;
 
-    
+    // sets direction to left/right
+    void lookAt(const std::optional<LookingDirection>& direction);
+
+
     enum class ColliderCheckAxis : short { X, Y };
     
+    // check collision by Y, and then X
     void checkColliding(const ColliderCheckAxis& axis);
     void checkCollidingX(const std::unique_ptr<Collider>& collider);
     void checkCollidingY(const std::unique_ptr<Collider>& collider);
     
 public:
+
     Entity(const std::string& texture_name, const sf::Color& color, const sf::FloatRect& rect);
     virtual ~Entity()=default;
 
     void update(const float& dt) override;
-    
-    const EntityType getType();
-    const sf::Vector2f getVelocity();
+    void updateItems();
 
     void hit(Entity* sender, const float& damage_amount);
     void heal(const float& heal_amount);
 
-    bool isInvincible();
+    const bool isInvincible();
+    const EntityType getType();
+    const sf::Vector2f getVelocity();
+
+    // for items buffs
+    friend class ItemManager;
 };

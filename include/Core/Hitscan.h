@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "DynamicBody.h"
+#include "../Entities/DynamicBody.h"
 
 
 class Hitscan

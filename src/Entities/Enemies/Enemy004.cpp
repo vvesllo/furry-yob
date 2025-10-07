@@ -1,9 +1,9 @@
-#include "../../../include/Entities/Enemies/Enemy004.h"
-#include "../../../include/Entities/Projectile.h"
+#include "include/Entities/Enemies/Enemy004.h"
+#include "include/Entities/Projectile.h"
 
-#include "../../../include/Core/InputManager.h"
-#include "../../../include/Core/EntityManager.h"
-#include "../../../include/Core/ColorManager.h"
+#include "include/Core/Managers/InputManager.h"
+#include "include/Core/Managers/EntityManager.h"
+#include "include/Core/Managers/ColorManager.h"
 
 
 Enemy004::Enemy004(const sf::Vector2f& position)
@@ -13,16 +13,20 @@ Enemy004::Enemy004(const sf::Vector2f& position)
         { position, { 19, 19 } }
     )
 {
-    entity_data.type = EntityType::Enemy;
+    EntityData data;
 
-    entity_data.max_health_points = 8;
-    entity_data.health_points = entity_data.max_health_points;
+    data.type = EntityType::Enemy;
+
+    data.max_health_points = 8;
+    data.health_points = data.max_health_points;
     
-    entity_data.shot_delay = .1f;
+    data.shot_delay = .1f;
 
-    entity_data.dash_delay = 1.f;
-    entity_data.acceleration = 30.f;
-    entity_data.speed = 70.f;
+    data.dash_delay = 1.f;
+    data.acceleration = 30.f;
+    data.speed = 70.f;
+    
+    regist(data);
 }
 
 void Enemy004::AI(const float& dt)

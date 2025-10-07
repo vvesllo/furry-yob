@@ -1,11 +1,10 @@
-#include "../../include/Entities/Player.h"
-#include "../../include/Entities/Projectile.h"
-#include "../../include/Entities/Enemies/Enemy000.h"
+#include "include/Entities/Player.h"
+#include "include/Entities/Projectile.h"
 
-#include "../../include/Core/InputManager.h"
-#include "../../include/Core/EntityManager.h"
-#include "../../include/Core/LevelManager.h"
-#include "../../include/Core/ColorManager.h"
+#include "include/Core/Managers/InputManager.h"
+#include "include/Core/Managers/EntityManager.h"
+#include "include/Core/Managers/LevelManager.h"
+#include "include/Core/Managers/ColorManager.h"
 
 Player::Player(const sf::Vector2f& position)
     : Entity(
@@ -14,16 +13,22 @@ Player::Player(const sf::Vector2f& position)
         { position, { 12, 16 } }
     )
 {
-    entity_data.type = EntityType::Player;
+    EntityData data;
 
-    entity_data.max_health_points = 5;
-    entity_data.health_points = entity_data.max_health_points;
+    data.type = EntityType::Player;
 
-    entity_data.shot_delay = .5f;
+    data.max_health_points = 5;
+    data.health_points = data.max_health_points;
 
-    entity_data.dash_delay = 1.f;
-    entity_data.acceleration = 10.f;
-    entity_data.speed = 160.f;
+    data.shot_delay = .5f;
+
+    data.dash_delay = 1.f;
+    data.acceleration = 10.f;
+    data.speed = 100.f;
+
+    regist(data);
+
+    // giveItem(ItemManager::ItemType::Syringe);
 }
 
 void Player::AI(const float& dt)

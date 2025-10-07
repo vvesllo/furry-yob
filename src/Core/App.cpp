@@ -1,7 +1,7 @@
-#include "../include/App.h"
-#include "../include/App.h"
-#include "../include/Core/SceneManager.h"
-#include "../include/Scenes/GameScene.h"
+#include "include/Core/App.h"
+#include "include/Core/App.h"
+#include "include/Core/Managers/SceneManager.h"
+#include "include/Scenes/GameScene.h"
 
 #include <print>
 

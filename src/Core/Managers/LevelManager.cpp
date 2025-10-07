@@ -1,10 +1,10 @@
-#include "../../include/Core/LevelManager.h"
-#include "../../include/Core/ResourceManager.h"
-#include "../../include/Core/ColorManager.h"
+#include "include/Core/Managers/LevelManager.h"
+#include "include/Core/Managers/ResourceManager.h"
+#include "include/Core/Managers/ColorManager.h"
 
-#include "../../include/Entities/Projectile.h"
-#include "../../include/Entities/Entity.h"
-#include "../../include/Entities/Player.h"
+#include "include/Entities/Projectile.h"
+#include "include/Entities/Entity.h"
+#include "include/Entities/Player.h"
 
 #include <fstream>
 

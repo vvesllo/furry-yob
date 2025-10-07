@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 
-#include "../Core/DynamicBody.h"
+#include "DynamicBody.h"
 #include "Entity.h"
 
 

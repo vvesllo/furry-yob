@@ -1,9 +1,10 @@
-#include "../../../include/Entities/Enemies/Enemy002.h"
-#include "../../../include/Entities/Projectile.h"
+#include "include/Entities/Enemies/Enemy002.h"
+#include "include/Entities/Projectile.h"
 
-#include "../../../include/Core/InputManager.h"
-#include "../../../include/Core/EntityManager.h"
-#include "../../../include/Core/ColorManager.h"
+#include "include/Core/Managers/InputManager.h"
+#include "include/Core/Managers/EntityManager.h"
+#include "include/Core/Managers/ColorManager.h"
+
 
 
 Enemy002::Enemy002(const sf::Vector2f& position)
@@ -13,16 +14,20 @@ Enemy002::Enemy002(const sf::Vector2f& position)
         { position, { 15, 16 } }
     )
 {
-    entity_data.type = EntityType::Enemy;
-
-    entity_data.max_health_points = 6;
-    entity_data.health_points = entity_data.max_health_points;
+    EntityData data;
     
-    entity_data.shot_delay = .08f;
+    data.type = EntityType::Enemy;
+    
+    data.max_health_points = 6;
+    data.health_points = data.max_health_points;
+    
+    data.shot_delay = .08f;
+    
+    data.dash_delay = 1.f;
+    data.acceleration = 15.f;
+    data.speed = 120.f;
 
-    entity_data.dash_delay = 1.f;
-    entity_data.acceleration = 5.f;
-    entity_data.speed = 130.f;
+    regist(data);
     
     m_shooting = false;
 }

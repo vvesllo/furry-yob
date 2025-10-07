@@ -2,9 +2,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "DynamicBody.h"
-#include "Collider.h"
-#include "../Entities/Projectile.h"
+#include "../Collider.h"
+#include "../../Entities/DynamicBody.h"
+#include "../../Entities/Projectile.h"
 
 class LevelManager
 {

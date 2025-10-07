@@ -1,6 +1,6 @@
-#include "../../include/Core/DynamicBody.h"
-#include "../../include/Core/ResourceManager.h"
-#include "../../include/Utils/Vector.h"
+#include "include/Entities/DynamicBody.h"
+#include "include/Core/Managers/ResourceManager.h"
+#include "include/Utils/Vector.h"
 
 
 DynamicBody::DynamicBody(const std::string& texture_name, const sf::Color& color, const sf::FloatRect& rect)

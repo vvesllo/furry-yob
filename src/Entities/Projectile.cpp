@@ -1,8 +1,6 @@
-#include "../../include/Entities/Projectile.h"
-#include "../../include/Entities/Enemies/Enemy000.h"
-#include "../../include/Entities/Player.h"
+#include "include/Entities/Projectile.h"
 
-#include "../../include/Core/EntityManager.h"
+#include "include/Core/Managers/EntityManager.h"
 
 
 Projectile::Projectile(

@@ -1,4 +1,4 @@
-#include "../../include/Core/SceneManager.h"
+#include "include/Core/Managers/SceneManager.h"
 
 SceneManager::SceneManager()
 {

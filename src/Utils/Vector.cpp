@@ -1,4 +1,4 @@
-#include "../../include/Utils/Vector.h"
+#include "include/Utils/Vector.h"
 
 
 const sf::Vector2f VectorUtils::lerp(const sf::Vector2f& a, const sf::Vector2f& b, const float& t)

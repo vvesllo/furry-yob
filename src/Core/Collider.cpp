@@ -1,4 +1,4 @@
-#include "../../include/Core/Collider.h"
+#include "include/Core/Collider.h"
 
 
 

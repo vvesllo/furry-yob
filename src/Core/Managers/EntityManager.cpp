@@ -1,9 +1,9 @@
-#include "../../include/Core/EntityManager.h"
-#include "../../include/Core/ResourceManager.h"
+#include "include/Core/Managers/EntityManager.h"
+#include "include/Core/Managers/ResourceManager.h"
 
-#include "../../include/Entities/Projectile.h"
-#include "../../include/Entities/Entity.h"
-#include "../../include/Entities/Player.h"
+#include "include/Entities/Projectile.h"
+#include "include/Entities/Entity.h"
+#include "include/Entities/Player.h"
 
 #include <fstream>
 

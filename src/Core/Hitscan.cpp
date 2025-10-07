@@ -1,5 +1,5 @@
-#include "../../include/Core/Hitscan.h"
-#include "../../include/Core/EntityManager.h"
+#include "include/Core/Hitscan.h"
+#include "include/Core/Managers/EntityManager.h"
 
 Hitscan::Hitscan(
     DynamicBody* sender,

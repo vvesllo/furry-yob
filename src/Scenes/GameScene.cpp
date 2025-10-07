@@ -1,21 +1,21 @@
-#include "../../include/Scenes/GameScene.h"
+#include "include/Scenes/GameScene.h"
 
-#include "../../include/Entities/Player.h"
-#include "../../include/Entities/Projectile.h"
+#include "include/Entities/Player.h"
+#include "include/Entities/Projectile.h"
 
-#include "../../include/Entities/Enemies/Enemy000.h"
-#include "../../include/Entities/Enemies/Enemy001.h"
-#include "../../include/Entities/Enemies/Enemy002.h"
-#include "../../include/Entities/Enemies/Enemy003.h"
-#include "../../include/Entities/Enemies/Enemy004.h"
+#include "include/Entities/Enemies/Enemy000.h"
+#include "include/Entities/Enemies/Enemy001.h"
+#include "include/Entities/Enemies/Enemy002.h"
+#include "include/Entities/Enemies/Enemy003.h"
+#include "include/Entities/Enemies/Enemy004.h"
 
-#include "../../include/Core/EntityManager.h"
-#include "../../include/Core/LevelManager.h"
-#include "../../include/Core/InputManager.h"
-#include "../../include/Core/ResourceManager.h"
-#include "../../include/Core/ColorManager.h"
+#include "include/Core/Managers/EntityManager.h"
+#include "include/Core/Managers/LevelManager.h"
+#include "include/Core/Managers/InputManager.h"
+#include "include/Core/Managers/ResourceManager.h"
+#include "include/Core/Managers/ColorManager.h"
 
-#include "../../include/Utils/Vector.h"
+#include "include/Utils/Vector.h"
 
 
 GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
@@ -170,17 +170,18 @@ void GameScene::spawnEnemies()
 		} 
 		else if (rand() % 11 == 0)
 		{
-			EntityManager::getInstance().newEntity<Enemy003>(position);
-			points -= 11;
-		} 
-		else if (rand() % 5 == 0)
-		{
 			if (rand() % 2 == 0)
 				EntityManager::getInstance().newEntity<Enemy002>(position);
 			else
-				EntityManager::getInstance().newEntity<Enemy001>(position);
-			
-				points -= 5;
+				EntityManager::getInstance().newEntity<Enemy003>(position);
+	
+				points -= 11;
+		} 
+		else if (rand() % 5 == 0)
+		{
+			EntityManager::getInstance().newEntity<Enemy001>(position);
+		
+			points -= 5;
 		} 
 		else
 		{

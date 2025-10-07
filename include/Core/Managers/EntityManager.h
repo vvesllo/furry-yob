@@ -3,11 +3,11 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
 
-#include "DynamicBody.h"
-#include "Hitscan.h"
+#include "../Hitscan.h"
 
-#include "../Entities/Projectile.h"
-#include "../Entities/Entity.h"
+#include "../../Entities/DynamicBody.h"
+#include "../../Entities/Projectile.h"
+#include "../../Entities/Entity.h"
 
 
 template<typename T>

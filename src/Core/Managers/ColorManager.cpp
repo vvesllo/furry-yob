@@ -1,4 +1,4 @@
-#include "../../include/Core/ColorManager.h"
+#include "include/Core/Managers/ColorManager.h"
 
 #include <fstream>
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Core/Scene.h"
-#include "../Core/DynamicBody.h"
+#include "Scene.h"
+#include "include/Entities/DynamicBody.h"
 
 #include <functional>
 

@@ -1,10 +1,11 @@
-#include "../../../include/Entities/Enemies/Enemy000.h"
-#include "../../../include/Entities/Projectile.h"
+#include "include/Entities/Enemies/Enemy000.h"
+#include "include/Entities/Projectile.h"
 
-#include "../../../include/Core/InputManager.h"
-#include "../../../include/Core/EntityManager.h"
-#include "../../../include/Core/ColorManager.h"
+#include "include/Core/Managers/InputManager.h"
+#include "include/Core/Managers/EntityManager.h"
+#include "include/Core/Managers/ColorManager.h"
 
+#include <print>
 
 Enemy000::Enemy000(const sf::Vector2f& position)
     : Entity(
@@ -13,16 +14,20 @@ Enemy000::Enemy000(const sf::Vector2f& position)
         { position, { 14, 16 } }
     )
 {
-    entity_data.type = EntityType::Enemy;
+    EntityData data;
 
-    entity_data.max_health_points = 3;
-    entity_data.health_points = entity_data.max_health_points;
+    data.type = EntityType::Enemy;
+
+    data.max_health_points = 3;
+    data.health_points = data.max_health_points;
     
-    entity_data.shot_delay = .5f;
+    data.shot_delay = .5f;
 
-    entity_data.dash_delay = 1.f;
-    entity_data.acceleration = 10.f;
-    entity_data.speed = 160.f;
+    data.dash_delay = 1.f;
+    data.acceleration = 10.f;
+    data.speed = 100.f;
+
+    regist(data);
 }
 
 void Enemy000::AI(const float& dt)

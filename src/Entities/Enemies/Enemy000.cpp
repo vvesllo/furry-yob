@@ -13,63 +13,54 @@ Enemy000::Enemy000(const sf::Vector2f& position)
         { position, { 14, 16 } }
     )
 {
-    entity_data.acceleration = 15.f;
-    entity_data.speed = 100.f;
     entity_data.type = EntityType::Enemy;
+
     entity_data.max_health_points = 3;
     entity_data.health_points = entity_data.max_health_points;
+    
+    entity_data.shot_delay = .5f;
 
-    m_staying = false;
-    m_shoot_cooldown = 1.f;
-}
-
-Enemy000::~Enemy000()
-{
+    entity_data.dash_delay = 1.f;
+    entity_data.acceleration = 10.f;
+    entity_data.speed = 160.f;
 }
 
 void Enemy000::AI(const float& dt)
 {
-    // std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>>
-    auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    const auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    if (!target) return;
+    m_distance = target->get()->getCenter() - getCenter();
     
-    if (!target.has_value()) return;
+    // move to player
+    if (m_distance.length() > 120.f)
+        velocity.terminal = m_distance;
 
-    const sf::Vector2f distance = target->get()->getCenter() - getCenter();
+    // move from player
+    else if (m_distance.length() < 60.f)
+        velocity.terminal = -m_distance;
     
-    m_staying = false;
-    if (distance.length() > 120.f)      velocity.terminal = distance;
-    else if (distance.length() < 60.f)  velocity.terminal = -distance;
-    else m_staying = true;
-    
-    if (m_staying && m_shoot_cooldown == 0.f)
+    if (entity_data.standing)
     {
-        EntityManager::getInstance().newProjectile(
-            (DynamicBody*)this,
-            "projectile_bullet",
-            {getCenter(), {5, 5}},
-            distance.normalized().rotatedBy(sf::degrees(10 - rand() % 21)),
-            400.f,
-            3.f,
-            true,
-            [](Projectile* projectile) {}
+        shootHitscan(
+            getCenter(),
+            m_distance.normalized().rotatedBy(sf::degrees(10 - rand() % 21)),
+            true
         );
-        
-        m_shoot_cooldown = .3f;
     }
+}
 
-    m_shoot_cooldown = std::max(m_shoot_cooldown - dt, 0.f);
-
-    if (!m_staying)
+const std::optional<Enemy000::LookingDirection> Enemy000::processDirection() 
+{
+    if (!entity_data.standing)
     {
-        if (velocity.current.x > 0) lookAt(LookingDirection::Right);
-        if (velocity.current.x < 0) lookAt(LookingDirection::Left);
+        if (velocity.current.x > 0) return LookingDirection::Right;
+        if (velocity.current.x < 0) return LookingDirection::Left;
     }
     else
     {
-        if (distance.x > 0) lookAt(LookingDirection::Right);
-        if (distance.x < 0) lookAt(LookingDirection::Left);
+        if (m_distance.x > 0) return LookingDirection::Right;
+        if (m_distance.x < 0) return LookingDirection::Left;
     }
-    
-    if (velocity.terminal.length() > 0) 
-        velocity.terminal = velocity.terminal.normalized();
+
+    return std::nullopt;
 }

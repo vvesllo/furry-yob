@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../Core/DynamicBody.h"
+#include "DynamicBody.h"
 
 
 class Hitscan
@@ -17,8 +17,7 @@ private:
     float m_max_life_time;
     float m_life_time;
     
-    void piercingShoot(const sf::Vector2f& direction);
-    void defaultShoot(const sf::Vector2f& direction);
+    void shoot(const sf::Vector2f& direction);
     
     bool rayIntersectsAABB(
         const sf::Vector2f& ray_origin, 

@@ -26,10 +26,11 @@ add_executable(
         
         src/Utils/Vector.cpp                include/Utils/Vector.h
         
+        src/Core/Hitscan.cpp                include/Core/Hitscan.h
+        
         src/Entities/Entity.cpp             include/Entities/Entity.h
         src/Entities/Player.cpp             include/Entities/Player.h
         src/Entities/Projectile.cpp         include/Entities/Projectile.h
-        src/Entities/Hitscan.cpp         include/Entities/Hitscan.h
 
         src/Entities/Enemies/Enemy000.cpp   include/Entities/Enemies/Enemy000.h
         src/Entities/Enemies/Enemy001.cpp   include/Entities/Enemies/Enemy001.h

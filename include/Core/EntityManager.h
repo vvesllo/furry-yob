@@ -4,9 +4,10 @@
 #include <optional>
 
 #include "DynamicBody.h"
+#include "Hitscan.h"
+
 #include "../Entities/Projectile.h"
 #include "../Entities/Entity.h"
-#include "../Entities/Hitscan.h"
 
 
 template<typename T>

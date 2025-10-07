@@ -44,8 +44,12 @@ const sf::FloatRect DynamicBody::getRect()
     return rect;
 }
 
+void DynamicBody::preDestroy()
+{}
+
 void DynamicBody::destroy()
 {
+    preDestroy();
     m_is_active = false;
 }
 

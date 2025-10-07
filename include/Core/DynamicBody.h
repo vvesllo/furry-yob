@@ -38,5 +38,6 @@ public:
     const sf::Color getColor();
 
     void destroy();
+    virtual void preDestroy();
     const bool isActive();
 };

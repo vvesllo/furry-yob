@@ -4,15 +4,16 @@
 
 #include "../Entity.h"
 
+
+// soldier
 class Enemy000 : public Entity
 {
 private:
-    bool m_staying;
-    float m_shoot_cooldown;
+    sf::Vector2f m_distance;
 
 public:
     Enemy000(const sf::Vector2f& position);
-    ~Enemy000();
 
     void AI(const float& dt) override;
+    const std::optional<LookingDirection> processDirection() override;
 };

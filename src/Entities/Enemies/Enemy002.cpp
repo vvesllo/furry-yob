@@ -13,61 +13,52 @@ Enemy002::Enemy002(const sf::Vector2f& position)
         { position, { 15, 16 } }
     )
 {
-    entity_data.acceleration = 5.f;
-    entity_data.speed = 130.f;
     entity_data.type = EntityType::Enemy;
 
-    entity_data.max_health_points = 7;
+    entity_data.max_health_points = 6;
     entity_data.health_points = entity_data.max_health_points;
+    
+    entity_data.shot_delay = .08f;
 
+    entity_data.dash_delay = 1.f;
+    entity_data.acceleration = 5.f;
+    entity_data.speed = 130.f;
+    
     m_shooting = false;
-    m_shoot_cooldown = 1.f;
-}
-
-Enemy002::~Enemy002()
-{
 }
 
 void Enemy002::AI(const float& dt)
 {
-    // std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>>
-    auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
-    
-    if (!target.has_value()) return;
-
+    const auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    if (!target) return;
     const sf::Vector2f distance = target->get()->getCenter() - getCenter();
     
     velocity.terminal = distance;
 
     m_shooting = distance.length() < 80.f;
     
-    if (m_shooting && m_shoot_cooldown == 0.f)
+    if (m_shooting)
     {
-        m_fire_tick++;
-        EntityManager::getInstance().newProjectile(
-            (DynamicBody*)this,
+        shootProjectile(
             "projectile_fire",
             sf::FloatRect{ getCenter(), { 9, 9 } },
-            distance.normalized().rotatedBy(sf::degrees(10.f * std::sinf(m_fire_tick))),
-            800.f,
-            .3f,
-            true,
+            distance.normalized().rotatedBy(sf::degrees(10.f * std::sinf(++m_fire_tick))),
+            800.f, .3f, true,
             [dt](Projectile* projectile) {
                 projectile->velocity.current *= 0.9f;
             }
         );    
-        m_shoot_cooldown = .08f;
     }
 
-    m_shoot_cooldown = std::max(m_shoot_cooldown - dt, 0.f);
+}
 
+const std::optional<Enemy002::LookingDirection> Enemy002::processDirection()
+{
     if (!m_shooting)
     {
-        m_fire_tick = 0;
-        if (velocity.current.x > 0) lookAt(LookingDirection::Right);
-        if (velocity.current.x < 0) lookAt(LookingDirection::Left);
+        if (velocity.current.x > 0) return LookingDirection::Right;
+        else if (velocity.current.x < 0) return LookingDirection::Left;
     }
-    
-    if (velocity.terminal.length() > 0) 
-        velocity.terminal = velocity.terminal.normalized();
+
+    return std::nullopt;
 }

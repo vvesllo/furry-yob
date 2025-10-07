@@ -4,16 +4,16 @@
 
 #include "../Entity.h"
 
+// streetcleaner ultrakill no way
 class Enemy002 : public Entity
 {
 private:
     bool m_shooting;
-    float m_shoot_cooldown;
     float m_fire_tick;
 
 public:
     Enemy002(const sf::Vector2f& position);
-    ~Enemy002();
 
     void AI(const float& dt) override;
+    const std::optional<LookingDirection> processDirection() override;
 };

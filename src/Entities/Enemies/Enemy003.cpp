@@ -13,59 +13,52 @@ Enemy003::Enemy003(const sf::Vector2f& position)
         { position, { 16, 16 } }
     )
 {
+    entity_data.type = EntityType::Enemy;
+
+    entity_data.max_health_points = 5;
+    entity_data.health_points = entity_data.max_health_points;
+    
+    entity_data.shot_delay = 2.5f;
+
+    entity_data.dash_delay = 1.f;
     entity_data.acceleration = 50.f;
     entity_data.speed = 80.f;
-    entity_data.type = EntityType::Enemy;
-    entity_data.max_health_points = 7;
-    entity_data.health_points = entity_data.max_health_points;
-
-    m_staying = false;
-    m_shoot_cooldown = 1.f;
-}
-
-Enemy003::~Enemy003()
-{
 }
 
 void Enemy003::AI(const float& dt)
 {
     // std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>>
-    auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    const auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    if (!target) return;
+    m_distance = target->get()->getCenter() - getCenter();
     
-    if (!target.has_value()) return;
-
-    const sf::Vector2f distance = target->get()->getCenter() - getCenter();
+    if (m_distance.length() > 300.f)
+        velocity.terminal = m_distance;
+    else if (m_distance.length() < 200.f)
+        velocity.terminal = -m_distance;
     
-    m_staying = false;
-    if (distance.length() > 300.f)       velocity.terminal = distance;
-    else if (distance.length() < 200.f)  velocity.terminal = -distance;
-    else m_staying = true;
-    
-    if (m_staying && m_shoot_cooldown == 0.f)
+    if (entity_data.standing)
     {
-        EntityManager::getInstance().newHitscan(
-            (DynamicBody*)this,
+        shootHitscan(
             getCenter(),
-            distance.normalized(),
+            m_distance.normalized(),
             true
         );
-        
-        m_shoot_cooldown = 2.f;
     }
+}
 
-    m_shoot_cooldown = std::max(m_shoot_cooldown - dt, 0.f);
-
-    if (!m_staying)
+const std::optional<Enemy003::LookingDirection> Enemy003::processDirection()
+{
+    if (!entity_data.standing)
     {
-        if (velocity.current.x > 0) lookAt(LookingDirection::Right);
-        if (velocity.current.x < 0) lookAt(LookingDirection::Left);
+        if (velocity.current.x > 0) return LookingDirection::Right;
+        if (velocity.current.x < 0) return LookingDirection::Left;
     }
     else
     {
-        if (distance.x > 0) lookAt(LookingDirection::Right);
-        if (distance.x < 0) lookAt(LookingDirection::Left);
+        if (m_distance.x > 0) return LookingDirection::Right;
+        if (m_distance.x < 0) return LookingDirection::Left;
     }
-    
-    if (velocity.terminal.length() > 0) 
-        velocity.terminal = velocity.terminal.normalized();
+
+    return std::nullopt;
 }

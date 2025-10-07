@@ -36,13 +36,15 @@ void Projectile::checkHit()
     
     for (int i=0; i < dynamic_bodies.size(); ++i)
     {
-        Entity* target = dynamic_cast<Entity*>(dynamic_bodies[i].get());
+        Entity* target_entity = dynamic_cast<Entity*>(dynamic_bodies[i].get());
+        Entity* sender_entity = (Entity*)m_sender;
 
-        if (target != nullptr && !target->isInvincible() && target != m_sender && rect.findIntersection(target->getRect()))
+        if (target_entity != nullptr && !target_entity->isInvincible() && target_entity != sender_entity && rect.findIntersection(target_entity->getRect()))
         {  
-            target->damage(1);
+            target_entity->hit(sender_entity, 1);
 
-            if (!target->isActive()) ((Entity*)m_sender)->heal(1);
+            if (!target_entity->isActive()) 
+                sender_entity->heal(1);
             
             if (!m_piercing)
             {

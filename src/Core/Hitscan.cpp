@@ -1,4 +1,4 @@
-#include "../../include/Entities/Hitscan.h"
+#include "../../include/Core/Hitscan.h"
 #include "../../include/Core/EntityManager.h"
 
 Hitscan::Hitscan(
@@ -15,8 +15,7 @@ Hitscan::Hitscan(
     m_max_life_time = .2f;
     m_life_time = m_max_life_time;
 
-    if (m_piercing) piercingShoot(direction);
-    else defaultShoot(direction);
+    shoot(direction);
 }
 
 Hitscan::~Hitscan()
@@ -56,12 +55,12 @@ bool Hitscan::rayIntersectsAABB(
     return t >= 0;
 }
 
-void Hitscan::piercingShoot(const sf::Vector2f& direction)
+void Hitscan::shoot(const sf::Vector2f& direction)
 {
     std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies = EntityManager::getInstance().getEntities();
 
-    float closest_t = std::numeric_limits<float>::max();
-    std::vector<Entity*> hit_targets;
+    float closest_target = std::numeric_limits<float>::max();
+    std::vector<std::pair<Entity*, float>> hit_targets;
 
     for (const auto& body : dynamic_bodies)
     {
@@ -74,59 +73,38 @@ void Hitscan::piercingShoot(const sf::Vector2f& direction)
         float t;
 
         if (rayIntersectsAABB(m_line[0].position, direction, target_rect, t))
+            hit_targets.push_back({target, t});
+    }
+
+    std::sort(
+        hit_targets.begin(),
+        hit_targets.end(),
+        [] (const std::pair<Entity*, float>& left, 
+            const std::pair<Entity*, float>& right)
         {
-            hit_targets.push_back(target);
+            return left.second < right.second; 
         }
-    }
+    );
 
-    float distance = 1000.0f;
+    float distance = 1000.f;
 
-    for (const auto& target : hit_targets)
+    if (!hit_targets.empty())
     {
-        target->damage(1);
-
-        if (!target->isActive() && m_sender)
-            dynamic_cast<Entity*>(m_sender)->heal(1);
-    }
-
-    m_line[1] = sf::Vertex(m_line[0].position + direction * distance, m_sender->getColor());
-}
-
-void Hitscan::defaultShoot(const sf::Vector2f& direction)
-{
-    std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies = EntityManager::getInstance().getEntities();
-
-    float closest_t = std::numeric_limits<float>::max();
-    Entity* hit_target = nullptr;
-
-    for (const auto& body : dynamic_bodies)
-    {
-        Entity* target = dynamic_cast<Entity*>(body.get());
-
-        if (!target || target == m_sender || target->isInvincible())
-            continue;
-            
-        sf::FloatRect target_rect = target->getRect();
-        float t;
-
-        if (rayIntersectsAABB(m_line[0].position, direction, target_rect, t))
+        Entity* sender_entity = dynamic_cast<Entity*>(m_sender);
+        
+        for (const auto& target : hit_targets)
         {
-            if (t < closest_t)
+            target.first->hit(sender_entity, 1);
+
+            if (!target.first->isActive() && sender_entity)
+                sender_entity->heal(1);
+
+            if (!m_piercing) 
             {
-                closest_t = t;
-                hit_target = target;
+                distance = target.second;
+                break;
             }
-        }
-    }
-
-    float distance = (hit_target != nullptr) ? closest_t : 1000.0f;
-
-    if (hit_target)
-    {
-        hit_target->damage(1);
-
-        if (!hit_target->isActive() && m_sender)
-            dynamic_cast<Entity*>(m_sender)->heal(1);
+        }   
     }
 
     m_line[1] = sf::Vertex(m_line[0].position + direction * distance, m_sender->getColor());

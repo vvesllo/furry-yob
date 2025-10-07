@@ -5,73 +5,146 @@
 #include "../../include/Core/LevelManager.h"
 
 
-#include <print>
-
 Entity::Entity(const std::string& texture_name, const sf::Color& color, const sf::FloatRect& rect)
     : DynamicBody(texture_name, color, rect)
 {
     m_invincibility_time = 0.f;
+    
+    m_dash_cooldown = 0.f;
+    m_shoot_cooldown = .1f;
 }
 
 void Entity::update(const float& dt)
 {
+    // check is entity dead
     if (entity_data.health_points <= 0)
     {
         destroy();
         return;
     }
 
-    m_invincibility_time = (float)std::max(0.f, (float)m_invincibility_time - dt);
+    // reset velocity
     velocity.terminal = sf::Vector2f{};
 
+    // individual update function for entity childrens
     AI(dt);
+    movement(dt);
 
+    lookAt(processDirection());
+    
+    m_dash_cooldown = std::max(0.f, m_dash_cooldown - dt);
+    m_shoot_cooldown = std::max(0.f, m_shoot_cooldown - dt);
+
+    // entity can't take damage while m_invincibility_time > 0.f
+    m_invincibility_time = std::max(0.f, m_invincibility_time - dt);
+
+    if (m_shoot) 
+    {
+        m_shoot_cooldown = entity_data.shot_delay;
+        m_shoot = false;
+    }
+}
+
+void Entity::movement(const float& dt)
+{
+    // noramlize velocity after AI(float) (smth like {1, 1} -> {v/2, v/2})
+    if (velocity.terminal.length() > 0) velocity.terminal = velocity.terminal.normalized();
+
+    // update velocity
     velocity.current = VectorUtils::lerp(
         velocity.current, 
         velocity.terminal, 
         entity_data.acceleration > 0 ? entity_data.acceleration * dt : 1.f
     );
 
+    // bouncy animation (jump + rotation)
     const float current_speed = velocity.current.length();
     const double additional_transformation_value = std::sin(m_moving_frames / 5.f);
 
-    if (current_speed < 0.05f)
-        m_moving_frames = 0;
-    else
-        ++m_moving_frames;
+    // check if entity moves and count frames when entity move
+    entity_data.standing = current_speed < 0.05f;
 
+    if (entity_data.standing) m_moving_frames = 0;
+    else ++m_moving_frames;
+
+
+    const sf::Angle rotation = sf::degrees(current_speed * additional_transformation_value * 10.f);
+    const sf::Vector2f jumping_offset = sf::Vector2f(0, 5.f * std::abs(additional_transformation_value));
+
+    // move entity
     rect.position.x += entity_data.speed * velocity.current.x * dt;
     checkColliding(ColliderCheckAxis::X);
 
     rect.position.y += entity_data.speed * velocity.current.y * dt;
     checkColliding(ColliderCheckAxis::Y);
     
-    sprite->setRotation(sf::degrees(current_speed * additional_transformation_value * 10.f));
-    sprite->setPosition(
-        rect.position + rect.size / 2.f - sf::Vector2f(
-            0, 5.f * std::abs(additional_transformation_value)
-        )
-    );
+    // update sprite
+    sprite->setRotation(rotation);
+    sprite->setPosition(rect.getCenter() - jumping_offset);
 }
 
-void Entity::lookAt(const LookingDirection direction)
-{
-    switch (direction)
+void Entity::lookAt(const std::optional<LookingDirection>& direction)
+{   
+    // stop if current direction equals to terminal
+    if (!direction || direction == m_looking_direction) return;
+
+    switch (direction.value())
     {
     case LookingDirection::Right:
         sprite->setScale({ 1, 1 });
         break;
     case LookingDirection::Left:
-        sprite->setScale({-1, 1 });
+        sprite->setScale({ -1, 1 });
         break;
     }
-    entity_data.looking_direction = direction;
+
+    m_looking_direction = direction.value();
 }
 
 void Entity::dash(const sf::Vector2f& direction)
 {
-    m_invincibility_time = .5f;
-    velocity.current = direction;
+    if (m_dash_cooldown <= 0.f)
+    {
+        m_invincibility_time = .5f;
+        velocity.current = direction;
+
+        m_dash_cooldown = entity_data.dash_delay;
+    }
+}
+
+void Entity::shootHitscan(const sf::Vector2f& position, const sf::Vector2f& direction, const bool piercing)
+{
+    if (m_shoot_cooldown <= 0.f)
+    {
+        EntityManager::getInstance().newHitscan(
+            (DynamicBody*)this,
+            position,
+            direction,
+            piercing
+        );
+
+        m_shoot = true;
+    }
+}
+
+void Entity::shootProjectile(
+        const std::string& name, 
+        const sf::FloatRect& rect, 
+        const sf::Vector2f& direction, 
+        const float& speed,
+        const float& lifetime,
+        const bool piercing,
+        const std::function<void(Projectile*)> ai)
+{
+    
+    if (m_shoot_cooldown <= 0.f)
+    {
+        EntityManager::getInstance().newProjectile(
+            (DynamicBody*)this, name, rect, direction, speed, lifetime, piercing, ai
+        );    
+        
+        m_shoot = true;
+    }
 }
 
 const EntityType Entity::getType()
@@ -79,8 +152,15 @@ const EntityType Entity::getType()
     return entity_data.type;
 }
 
-void Entity::damage(const float& damage_amount)
+const bool Entity::preHit(Entity* sender)
 {
+    return true;
+}
+
+void Entity::hit(Entity* sender, const float& damage_amount)
+{
+    if (!preHit(sender)) return;
+    
     m_invincibility_time = .2f;
     entity_data.health_points -= damage_amount;
 

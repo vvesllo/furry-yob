@@ -13,66 +13,57 @@ Enemy001::Enemy001(const sf::Vector2f& position)
         { position, { 14, 16 } }
     )
 {
-    entity_data.acceleration = 50.f;
-    entity_data.speed = 80.f;
     entity_data.type = EntityType::Enemy;
 
-    entity_data.max_health_points = 10;
+
+    entity_data.max_health_points = 6;
     entity_data.health_points = entity_data.max_health_points;
+    
+    entity_data.shot_delay = 1.f;
 
-    m_staying = false;
-    m_shoot_cooldown = 1.f;
-}
-
-Enemy001::~Enemy001()
-{
+    entity_data.dash_delay = .0f;
+    entity_data.acceleration = 50.f;
+    entity_data.speed = 80.f;
 }
 
 void Enemy001::AI(const float& dt)
 {
-    // std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>>
-    auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    const auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    if (!target) return;
+    m_distance = target->get()->getCenter() - getCenter();
     
-    if (!target.has_value()) return;
-
-    const sf::Vector2f distance = target->get()->getCenter() - getCenter();
+    if (m_distance.length() > 100.f) 
+        velocity.terminal = m_distance;
     
-    m_staying = false;
-    if (distance.length() > 100.f) velocity.terminal = distance;
-    else m_staying = true;
-    
-    if (m_staying && m_shoot_cooldown == 0.f)
+    if (entity_data.standing)
     {
         for (short i=-2; i < 3; ++i)
         {
-            EntityManager::getInstance().newProjectile(
-                (DynamicBody*)this,
-                "projectile_bullet",
-                sf::FloatRect{ getCenter(), { 5, 5 } },
-                distance.normalized().rotatedBy(sf::degrees(5 * i)),
-                400.f,
-                5.f,
-                false,
-                [](Projectile* projectile) {}
+            shootProjectile(
+                "projectile_bullet", // name
+                sf::FloatRect{ getCenter(), { 5, 5 } }, // rect
+                m_distance.normalized().rotatedBy(sf::degrees(5 * i)), // direction
+                400.f, // speed
+                5.f, // life time
+                false, // piercing
+                [](Projectile* projectile) {} // ai
             );
         }
-        
-        m_shoot_cooldown = 2.f;
     }
+}
 
-    m_shoot_cooldown = std::max(m_shoot_cooldown - dt, 0.f);
-
-    if (!m_staying)
+const std::optional<Enemy001::LookingDirection> Enemy001::processDirection() 
+{
+    if (!entity_data.standing)
     {
-        if (velocity.current.x > 0) lookAt(LookingDirection::Right);
-        if (velocity.current.x < 0) lookAt(LookingDirection::Left);
+        if (velocity.current.x > 0) return LookingDirection::Right;
+        if (velocity.current.x < 0) return LookingDirection::Left;
     }
     else
     {
-        if (distance.x > 0) lookAt(LookingDirection::Right);
-        if (distance.x < 0) lookAt(LookingDirection::Left);
+        if (m_distance.x > 0) return LookingDirection::Right;
+        if (m_distance.x < 0) return LookingDirection::Left;
     }
-    
-    if (velocity.terminal.length() > 0) 
-        velocity.terminal = velocity.terminal.normalized();
+
+    return std::nullopt;
 }

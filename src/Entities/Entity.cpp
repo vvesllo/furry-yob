@@ -54,17 +54,17 @@ void Entity::update(const float& dt)
     }
 }
     
-void Entity::updateItems()
+void Entity::updateItems() 
 {
-    for (const auto& item : EntityManager::getInstance().getInventory())
+    for (const auto& item : EntityManager::getInstance().getEntityItems())
     {
-        ItemManager::getInstance().update(this, item.second, item.first);
+        ItemManager::getInstance().update(this, item.first, item.second);
     }
 }
 
 void Entity::checkColliding(const ColliderCheckAxis& axis)
 {
-    const std::vector<std::unique_ptr<Collider>>& colliders = LevelManager::getInstance().get();
+    const Types::uptr_vec<Collider>& colliders = LevelManager::getInstance().get();
     for (size_t i=0; i < colliders.size(); ++i)
     {
         if (colliders[i]->getRect().findIntersection(rect) && colliders[i]->getType() == ColliderType::Empty)

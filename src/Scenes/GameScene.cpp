@@ -25,10 +25,10 @@ GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
 
 	EntityManager::getInstance().newEntity<Player>(sf::Vector2f{ 0, 0 });
 	LevelManager::getInstance().load("map_000");
-	
+
 	m_wave_label = std::make_unique<sf::Text>(
 		*ResourceManager::getInstance().getFont("basis33"),
-		"", 
+		"",
 		32
 	);
 	m_wave_label->setPosition(sf::Vector2f(150, 30));
@@ -38,18 +38,16 @@ GameScene::GameScene(std::unique_ptr<sf::RenderWindow>& window)
 	m_calm_time = m_max_calm_time;
 
 	m_view = sf::View(sf::FloatRect{
-		{ 0, 0 }, 
+		{ 0, 0 },
 		(sf::Vector2f)m_window->getSize()
-	});
-	m_view.setCenter({0, 0});
+		});
+	m_view.setCenter({ 0, 0 });
 	m_view.zoom(.5f);
-	
+
 	m_wave = 0;
 
 	m_player = EntityManager::getInstance().findEntityByType(EntityType::Player)->get().get();
 
-	m_item_spawned = false;
-	
 	ThemeManager::getInstance().playMusic();
 }
 
@@ -68,7 +66,7 @@ void GameScene::pollEvent(const std::optional<sf::Event>& event)
 	{
 		switch (event->getIf<sf::Event::MouseButtonPressed>()->button)
 		{
-		case sf::Mouse::Button::Left:	
+		case sf::Mouse::Button::Left:
 			InputManager::getInstance().getMouse().left_button = true;
 			break;
 		case sf::Mouse::Button::Right:
@@ -80,7 +78,7 @@ void GameScene::pollEvent(const std::optional<sf::Event>& event)
 	{
 		switch (event->getIf<sf::Event::MouseButtonReleased>()->button)
 		{
-		case sf::Mouse::Button::Left:	
+		case sf::Mouse::Button::Left:
 			InputManager::getInstance().getMouse().left_button = false;
 			break;
 		case sf::Mouse::Button::Right:
@@ -93,7 +91,7 @@ void GameScene::pollEvent(const std::optional<sf::Event>& event)
 void GameScene::update(const float& dt)
 {
 	InputManager::getInstance().getMouse().position = m_window->mapPixelToCoords(sf::Mouse::getPosition(*m_window));
-	
+
 	m_view.setCenter(
 		VectorUtils::lerp(
 			m_view.getCenter(),
@@ -102,22 +100,15 @@ void GameScene::update(const float& dt)
 		)
 	);
 	m_window->setView(m_view);
-	
+
 	if (!m_player->isActive())
 		ThemeManager::getInstance().finishMusic(dt);
 
 	size_t enemy_amount = 0;
-	
+
 	for (const auto& entity : EntityManager::getInstance().getEntities())
 	{
 		enemy_amount += (int)(((Entity*)entity.get())->getType() == EntityType::Enemy);
-	}
-	
-	
-	if (!m_item_spawned && enemy_amount == 0)
-	{
-		spawnItem();
-		m_item_spawned = true;
 	}
 
 	if (enemy_amount == 0)
@@ -131,10 +122,10 @@ void GameScene::update(const float& dt)
 			);
 			spawnEnemies();
 		}
-		
+
 		m_calm_time -= dt;
 	}
-	
+
 	EntityManager::getInstance().update(dt);
 }
 
@@ -144,72 +135,57 @@ void GameScene::draw()
 
 	LevelManager::getInstance().draw(m_window);
 	EntityManager::getInstance().draw(m_window);
-    
+
 	m_window->setView(m_window->getDefaultView());
-	
+
 	std::unique_ptr<sf::Sprite>& player_icon = LevelManager::getInstance().getPlayerIcon();
-	
+
 	// todo: fix this piece of fucking garbage
 	player_icon->setColor(ThemeManager::getInstance().getTheme().player);
 	player_icon->setPosition(sf::Vector2f(150, 100));
-	
+
 	m_window->draw(*m_wave_label);
 	m_window->draw(*player_icon);
-	
+
 	m_window->setView(m_view);
 
 	m_window->display();
 }
 
-void GameScene::spawnItem()
-{
-	auto& item_textures = EntityManager::getInstance().getItemTextures();
-	auto it = item_textures.begin();
-    std::advance(it, rand() % item_textures.size());
-
-	ItemManager::ItemType type = (*it).first;
-
-	EntityManager::getInstance().newItem(
-		sf::Vector2f(30, 0).rotatedBy(sf::degrees(rand() % 360)),
-		type
-	);
-}
-
 void GameScene::spawnEnemies()
 {
-	m_item_spawned = false;
 	int points = std::pow(m_wave, 2);
 
 	sf::Vector2f position;
 
-	const std::vector<std::unique_ptr<Collider>>& colliders = LevelManager::getInstance().get();
+	const Types::uptr_vec<Collider>& colliders = LevelManager::getInstance().get();
 	const std::vector<sf::Vector2f>& spawn_points = LevelManager::getInstance().getSpawnPoints();
 
 	while (points > 0)
 	{
 		position = spawn_points[rand() % spawn_points.size()] + sf::Vector2f(8, 0).rotatedBy(sf::degrees(rand() % 360));
-	
-		
+
+
 		if (rand() % 29 == 0)
 		{
 			EntityManager::getInstance().newEntity<Enemy004>(position);
 			points -= 29;
-		} 
+		}
 		else if (rand() % 11 == 0)
 		{
 			if (rand() % 2 == 0)
 				EntityManager::getInstance().newEntity<Enemy002>(position);
 			else
 				EntityManager::getInstance().newEntity<Enemy003>(position);
-	
-				points -= 11;
-		} 
+
+			points -= 11;
+		}
 		else if (rand() % 5 == 0)
 		{
 			EntityManager::getInstance().newEntity<Enemy001>(position);
-		
+
 			points -= 5;
-		} 
+		}
 		else
 		{
 			EntityManager::getInstance().newEntity<Enemy000>(position);

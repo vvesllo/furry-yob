@@ -10,33 +10,23 @@
 #include "../../Entities/Entity.h"
 #include "../../Entities/Item.h"
 
-
-template<typename T>
-concept TEntity = std::is_base_of_v<Entity, T>;
-
+#include "ItemManager.h"
+#include "../../Utils/Types.h"
 
 class EntityManager
 {
 private:
-    std::vector<std::unique_ptr<DynamicBody>> m_entities;
-    std::vector<std::unique_ptr<DynamicBody>> m_projectiles;
-    std::vector<std::unique_ptr<DynamicBody>> m_items;
-    std::vector<std::unique_ptr<Hitscan>> m_hitscans;
+    Types::uptr_vec<DynamicBody> m_entities;
+    Types::uptr_vec<DynamicBody> m_projectiles;
+    Types::uptr_vec<Hitscan> m_hitscans;
 
-    
     // item :: amount
-    std::map<ItemManager::ItemType, size_t> m_inventory;
-    std::map<ItemManager::ItemType, std::string> m_item_textures;
-    
+    std::map<ItemManager::ItemType, size_t> m_entity_inventory;
 
-    void forEachUpdate(std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies, const float& dt);
-    void forEachDraw(std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies, std::unique_ptr<sf::RenderWindow>& target);
+    void forEachUpdate(Types::uptr_vec<DynamicBody>& dynamic_bodies, const float& dt);
+    void forEachDraw(Types::uptr_vec<DynamicBody>& dynamic_bodies, std::unique_ptr<sf::RenderWindow>& target);
 
 public:
-    // add 1 into map<..., size_t>
-    void addItem(const ItemManager::ItemType& type);
-    std::map<ItemManager::ItemType, size_t>& getInventory();
-    std::map<ItemManager::ItemType, std::string>& getItemTextures();
 
 	EntityManager();
 
@@ -45,7 +35,12 @@ public:
 
     static EntityManager& getInstance();
     
-    template<class T> requires TEntity<T>
+
+    void update(const float& dt);
+    void draw(std::unique_ptr<sf::RenderWindow>& target);
+
+
+    template<class T> requires std::is_base_of_v<Entity, T>
     void newEntity(const sf::Vector2f& position)
     {
         m_entities.emplace_back(std::make_unique<T>(position));
@@ -68,16 +63,12 @@ public:
         const sf::Vector2f& direction,
         const bool piercing);
 
-    void newItem(const sf::Vector2f& position, const ItemManager::ItemType& type);
+        
+    std::map<ItemManager::ItemType, size_t>& getEntityItems();
+    Types::uptr_vec<DynamicBody>& getEntities();
+    Types::uptr_vec<DynamicBody>& getProjectiles();
 
-    void update(const float& dt);
-    void draw(std::unique_ptr<sf::RenderWindow>& target);
-
-    std::vector<std::unique_ptr<DynamicBody>>& getEntities();
-    std::vector<std::unique_ptr<DynamicBody>>& getProjectiles();
-    std::vector<std::unique_ptr<DynamicBody>>& getItems();
-    
     template<class T>
-    std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>> findByClass();
-    std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>> findEntityByType(const EntityType& type);
+    Types::uptr_ref_opt<DynamicBody> findByClass();
+    Types::uptr_ref_opt<DynamicBody> findEntityByType(const EntityType& type);
 };

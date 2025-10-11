@@ -1,0 +1,8 @@
+theme ror2
+
+color player        0xe7bf6bFF
+color enemy         0xbff8e1FF
+color ground        0x093965FF
+color background    0x10c1ddFF
+
+music resources/music/thermodynamic-equilibrium.mp3

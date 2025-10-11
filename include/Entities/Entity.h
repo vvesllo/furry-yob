@@ -89,6 +89,7 @@ private:
 
     // data for items update
     EntityData m_static_entity_data;
+
     // movement animation (lil jump + lil rotation)
     size_t m_moving_frames;
     
@@ -119,7 +120,7 @@ public:
     virtual ~Entity()=default;
 
     void update(const float& dt) override;
-    void updateItems();
+    virtual void updateItems();
 
     void hit(Entity* sender, const float& damage_amount);
     void heal(const float& heal_amount);

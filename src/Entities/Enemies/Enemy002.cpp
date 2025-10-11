@@ -34,10 +34,12 @@ Enemy002::Enemy002(const sf::Vector2f& position)
 
 void Enemy002::AI(const float& dt)
 {
-    const auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    
+    // find player
+    const Types::uptr_ref_opt<DynamicBody> target = EntityManager::getInstance().findEntityByType(EntityType::Player);
     if (!target) return;
     const sf::Vector2f distance = target->get()->getCenter() - getCenter();
-    
+
     velocity.terminal = distance;
 
     m_shooting = distance.length() < 80.f;

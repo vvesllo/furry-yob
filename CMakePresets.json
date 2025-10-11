@@ -2,7 +2,7 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "vcpkg",
+            "name": "vcpkg-windows",
             "generator": "Visual Studio 17 2022",
             "architecture": "x64",
             "binaryDir": "${sourceDir}/build",

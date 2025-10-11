@@ -1,7 +1,6 @@
 #include "include/Core/Managers/ThemeManager.h"
 
 #include <fstream>
-#include <print>
 #include <map>
 
 ThemeManager::ThemeManager()
@@ -23,7 +22,7 @@ ThemeManager& ThemeManager::getInstance()
 void ThemeManager::load()
 {
     std::ifstream f;
-    f.open("resources/theme.txt");
+    f.open("resources/themes/theme.txt");
 
     std::string arg;
     uint32_t value;
@@ -44,7 +43,6 @@ void ThemeManager::load()
         else if (arg == "music")
         {
             f >> name;
-            std::println("{}", name);
             m_theme.music.openFromFile(name);
             m_theme.music.setLooping(true);
             continue;

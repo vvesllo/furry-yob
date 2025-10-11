@@ -57,7 +57,7 @@ bool Hitscan::rayIntersectsAABB(
 
 void Hitscan::shoot(const sf::Vector2f& direction)
 {
-    std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies = EntityManager::getInstance().getEntities();
+    Types::uptr_vec<DynamicBody>& dynamic_bodies = EntityManager::getInstance().getEntities();
 
     float closest_target = std::numeric_limits<float>::max();
     std::vector<std::pair<Entity*, float>> hit_targets;

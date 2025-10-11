@@ -5,7 +5,6 @@
 #include "include/Core/Managers/EntityManager.h"
 #include "include/Core/Managers/ThemeManager.h"
 
-#include <print>
 
 Enemy000::Enemy000(const sf::Vector2f& position)
     : Entity(
@@ -32,11 +31,12 @@ Enemy000::Enemy000(const sf::Vector2f& position)
 
 void Enemy000::AI(const float& dt)
 {
-
-    const auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    // find player
+    const Types::uptr_ref_opt<DynamicBody> target = EntityManager::getInstance().findEntityByType(EntityType::Player);
     if (!target) return;
     m_distance = target->get()->getCenter() - getCenter();
     
+
     // move to player
     if (m_distance.length() > 120.f)
         velocity.terminal = m_distance;

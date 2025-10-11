@@ -6,35 +6,16 @@
 #include "include/Entities/Player.h"
 
 #include <fstream>
-#include <print>
+
 
 EntityManager::EntityManager()
 {
-    m_item_textures[ItemManager::ItemType::Adrenaline] = "adrenaline";
-    m_item_textures[ItemManager::ItemType::Feather] = "feather";
 }
 
 EntityManager& EntityManager::getInstance()
 {
     static EntityManager instance;
     return instance;
-}
-
-std::map<ItemManager::ItemType, std::string>& EntityManager::getItemTextures()
-{
-    return m_item_textures;
-}
-
-std::map<ItemManager::ItemType, size_t>& EntityManager::getInventory()
-{
-    return m_inventory;
-}
-
-void EntityManager::addItem(const ItemManager::ItemType& type)
-{
-    if (!m_inventory.contains(type)) 
-        m_inventory[type] = 0;
-    ++m_inventory[type];
 }
 
 void EntityManager::newProjectile(
@@ -78,25 +59,13 @@ void EntityManager::newHitscan(
     );
 }
 
-void EntityManager::newItem(const sf::Vector2f& position, const ItemManager::ItemType& type)
-{
-    m_items.emplace_back(
-        std::make_unique<Item>(
-            m_item_textures[type],
-            sf::FloatRect{ position, sf::Vector2f{ 15, 15 } },
-            type
-        )
-    );
-}
-
-
-void EntityManager::forEachUpdate(std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies, const float& dt)
+void EntityManager::forEachUpdate(Types::uptr_vec<DynamicBody>& dynamic_bodies, const float& dt)
 {
 	for (size_t i=0; i < dynamic_bodies.size(); )
 	{
 		if (!dynamic_bodies[i]->isActive())
 		{
-			dynamic_bodies.erase(dynamic_bodies.begin() + i);
+			dynamic_bodies.erase(dynamic_bodies.cbegin() + i);
 			continue;
 		}
 		dynamic_bodies[i]->update(dt);
@@ -104,7 +73,7 @@ void EntityManager::forEachUpdate(std::vector<std::unique_ptr<DynamicBody>>& dyn
 	}
 }
 
-void EntityManager::forEachDraw(std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies, std::unique_ptr<sf::RenderWindow>& target)
+void EntityManager::forEachDraw(Types::uptr_vec<DynamicBody>& dynamic_bodies, std::unique_ptr<sf::RenderWindow>& target)
 {
     for (const auto& dynamic_body : dynamic_bodies)
     {
@@ -116,19 +85,16 @@ void EntityManager::update(const float& dt)
 {
     forEachUpdate(m_entities, dt);
     forEachUpdate(m_projectiles, dt);
-    forEachUpdate(m_items, dt);
     
-    for (int i=0; i < m_hitscans.size(); )
+    for (size_t i = 0; i < m_hitscans.size(); )
     {
-        if (m_hitscans[i]->isActive())
+        if (!m_hitscans[i]->isActive())
         {
-            m_hitscans[i]->update(dt);
-            ++i;
+            m_hitscans.erase(m_hitscans.cbegin() + i);
+            continue;
         }
-        else
-        {   
-            m_hitscans.erase(m_hitscans.begin() + i);
-        }
+        m_hitscans[i]->update(dt);
+        ++i;
     }
 }
 
@@ -136,7 +102,6 @@ void EntityManager::draw(std::unique_ptr<sf::RenderWindow>& target)
 {
     forEachDraw(m_entities, target);
     forEachDraw(m_projectiles, target);
-    forEachDraw(m_items, target);
 
     for (int i=0; i < m_hitscans.size(); ++i)
     {
@@ -144,23 +109,23 @@ void EntityManager::draw(std::unique_ptr<sf::RenderWindow>& target)
     }
 }
 
-std::vector<std::unique_ptr<DynamicBody>>& EntityManager::getEntities()
+Types::uptr_vec<DynamicBody>& EntityManager::getEntities()
 {
     return m_entities;
 }
 
-std::vector<std::unique_ptr<DynamicBody>>& EntityManager::getProjectiles()
+Types::uptr_vec<DynamicBody>& EntityManager::getProjectiles()
 {
     return m_projectiles;
 }
 
-std::vector<std::unique_ptr<DynamicBody>>& EntityManager::getItems()
+std::map<ItemManager::ItemType, size_t>& EntityManager::getEntityItems()
 {
-    return m_items;
+    return m_entity_inventory;
 }
 
 template<class T>
-std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>> EntityManager::findByClass()
+Types::uptr_ref_opt<DynamicBody> EntityManager::findByClass()
 {    
     for (int target_index = 0; target_index < m_entities.size(); ++target_index)
     {
@@ -171,7 +136,7 @@ std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>> EntityManage
     return nullptr;
 }
 
-std::optional<std::reference_wrapper<std::unique_ptr<DynamicBody>>> EntityManager::findEntityByType(const EntityType& type)
+Types::uptr_ref_opt<DynamicBody> EntityManager::findEntityByType(const EntityType& type)
 {
     for (int target_index = 0; target_index < m_entities.size(); ++target_index)
     {

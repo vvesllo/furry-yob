@@ -38,19 +38,6 @@ void Player::AI(const float& dt)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) velocity.terminal.y -= 1;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) velocity.terminal.y += 1;
     
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) 
-    {
-        auto& items = EntityManager::getInstance().getItems();
-        for (size_t i=0; i < items.size(); ++i)
-        {
-            if (items[i]->getRect().findIntersection(getRect()))
-            {
-                EntityManager::getInstance().addItem(((Item*)items[i].get())->getType());
-                items.erase(items.cbegin() + i);
-            }
-        }
-    }
-    
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) 
         dash(velocity.terminal * 5.f);
 

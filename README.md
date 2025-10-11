@@ -10,7 +10,7 @@ vcpkg/bootstrap-vcpkg.bat
 Build project
 ```
 mkdir build
-cmake -B build --preset vcpkg
+cmake -S . -B ./build --preset vcpkg-windows
 cmake --build ./build --config Release
 ```
 

@@ -10,13 +10,15 @@
 
 LevelManager::LevelManager()
 {
+    m_size = { 33, 33 };
+
     m_tile_sprite = std::make_unique<sf::Sprite>(*ResourceManager::getInstance().getTexture("tile"));
     m_tile_sprite->setColor(ThemeManager::getInstance().getTheme().ground);
+
 
     m_colliders.clear();
     m_spawn_points.clear();
 
-    m_size = { 33, 33 };
     
     m_player_icon = std::make_unique<sf::Sprite>(*ResourceManager::getInstance().getTexture("life_5"));
     m_player_icon->setOrigin(m_player_icon->getGlobalBounds().size / 2.f); 
@@ -86,7 +88,7 @@ const std::vector<sf::Vector2f>& LevelManager::getSpawnPoints()
     return m_spawn_points;
 }
 
-const std::vector<std::unique_ptr<Collider>>& LevelManager::get()
+const Types::uptr_vec<Collider>& LevelManager::get()
 {
     return m_colliders;
 }
@@ -103,7 +105,7 @@ std::unique_ptr<sf::Sprite>& LevelManager::getTileSprite()
 
 void LevelManager::addBlood(const sf::Vector2f& position, const sf::Color& color)
 {
-    unsigned short size = 5;
+    const unsigned short size = 5;
     
     sf::CircleShape circle;
     circle.setFillColor(color);
@@ -137,14 +139,17 @@ void LevelManager::draw(std::unique_ptr<sf::RenderWindow>& target)
 
 void LevelManager::setPlayerIcon(const int hp)
 {
+    std::string texture_name = "life_5";
+ 
     switch (hp)
     {
-    case 5:  m_player_icon->setTexture(*ResourceManager::getInstance().getTexture("life_5")); break;
-    case 4:  m_player_icon->setTexture(*ResourceManager::getInstance().getTexture("life_4")); break;
-    case 3:  m_player_icon->setTexture(*ResourceManager::getInstance().getTexture("life_3")); break;
-    case 2:  m_player_icon->setTexture(*ResourceManager::getInstance().getTexture("life_2")); break;
-    default: m_player_icon->setTexture(*ResourceManager::getInstance().getTexture("life_1")); break;
+    case 1: texture_name = "life_1"; break;
+    case 2: texture_name = "life_2"; break;
+    case 3: texture_name = "life_3"; break;
+    case 4: texture_name = "life_4"; break;
     }
+
+    m_player_icon->setTexture(*ResourceManager::getInstance().getTexture(texture_name)); 
 }
 
 std::unique_ptr<sf::Sprite>& LevelManager::getPlayerIcon()

@@ -32,9 +32,11 @@ Enemy001::Enemy001(const sf::Vector2f& position)
 
 void Enemy001::AI(const float& dt)
 {
-    const auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    // find player
+    const Types::uptr_ref_opt<DynamicBody> target = EntityManager::getInstance().findEntityByType(EntityType::Player);
     if (!target) return;
     m_distance = target->get()->getCenter() - getCenter();
+
     
     if (m_distance.length() > 100.f) 
         velocity.terminal = m_distance;

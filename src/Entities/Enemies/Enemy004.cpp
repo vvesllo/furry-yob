@@ -31,19 +31,21 @@ Enemy004::Enemy004(const sf::Vector2f& position)
 
 void Enemy004::AI(const float& dt)
 {
-    const auto target = EntityManager::getInstance().findEntityByType(EntityType::Player);
-    if (!target.has_value()) return;
-    m_direction = target->get()->getCenter() - getCenter();
+    // find player
+    const Types::uptr_ref_opt<DynamicBody> target = EntityManager::getInstance().findEntityByType(EntityType::Player);
+    if (!target) return;
+    m_distance = target->get()->getCenter() - getCenter();
 
-    if (m_direction.length() > 100.f) 
-        velocity.terminal = m_direction;
+
+    if (m_distance.length() > 100.f) 
+        velocity.terminal = m_distance;
 
     if (entity_data.standing)
     {
         m_fire_tick++;
         shootHitscan(
             getCenter(),
-            m_direction.normalized().rotatedBy(sf::degrees(10.f * std::sinf(++m_fire_tick))),
+            m_distance.normalized().rotatedBy(sf::degrees(10.f * std::sinf(++m_fire_tick))),
             false
         );
     }
@@ -58,8 +60,8 @@ const std::optional<Enemy004::LookingDirection> Enemy004::processDirection()
     }
     else
     {
-        if (m_direction.x > 0) return LookingDirection::Right;
-        if (m_direction.x < 0) return LookingDirection::Left;
+        if (m_distance.x > 0) return LookingDirection::Right;
+        if (m_distance.x < 0) return LookingDirection::Left;
     }
     
     return std::nullopt;

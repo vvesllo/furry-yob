@@ -30,7 +30,7 @@ Projectile::~Projectile()
 
 void Projectile::checkHit()
 {
-    std::vector<std::unique_ptr<DynamicBody>>& dynamic_bodies = EntityManager::getInstance().getEntities();
+    Types::uptr_vec<DynamicBody>& dynamic_bodies = EntityManager::getInstance().getEntities();
     
     for (int i=0; i < dynamic_bodies.size(); ++i)
     {

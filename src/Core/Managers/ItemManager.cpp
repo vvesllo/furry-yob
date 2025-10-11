@@ -2,19 +2,26 @@
 #include "include/Entities/Entity.h"
 
 
+  
+void ItemManager::initItems()
+{
+    m_items[ItemType::Adrenaline] = std::make_unique<ItemData>(
+        "adrenaline",
+        [this](Entity* entity, const size_t& amount) {
+            entity->entity_data.shot_delay = entity->m_static_entity_data.shot_delay * hyperbolicScale(amount, 0.10f);
+        }
+    );
+
+    m_items[ItemType::Feather] = std::make_unique<ItemData>(
+        "feather",
+        [this](Entity* entity, const size_t& amount) {
+            entity->entity_data.speed = entity->m_static_entity_data.speed * (1.f + linearScale(amount, 0.10f));
+        }
+    );
+}
+
 ItemManager::ItemManager()
 {
-    m_item_functions[ItemType::Adrenaline] = [=](Entity* entity, const size_t& amount) {
-        entity->entity_data.shot_delay = entity->m_static_entity_data.shot_delay * itemScaling(ItemScalingType::Hyperbolic, amount, 0.10f); // 10% proc chance
-    };
-    m_item_functions[ItemType::Feather] = [=](Entity* entity, const size_t& amount) {
-        entity->entity_data.speed = entity->m_static_entity_data.speed * (1 + itemScaling(ItemScalingType::Linear, amount, 0.10f)); // 10% proc chance
-    };
-    /*
-    m_item_functions[ItemType::Adrenaline] = [=](Entity* entity, const size_t& amount) {
-        entity->entity_data.speed = entity->m_static_entity_data.speed * itemScaling(ItemScalingType::Linear, amount, 0.10f); // 10% proc chance
-    };
-    */
 }
 
 ItemManager& ItemManager::getInstance()
@@ -23,17 +30,22 @@ ItemManager& ItemManager::getInstance()
 	return instance;
 }
 
-void ItemManager::update(Entity* entity, const size_t& amount, const ItemType& type)
+std::map<ItemManager::ItemType, std::unique_ptr<ItemManager::ItemData>>& ItemManager::getItems()
 {
-    m_item_functions[type](entity, amount);
+    return m_items;
 }
 
-float ItemManager::itemScaling(const ItemScalingType& scaling_type, const size_t& amount, const float& multiplier)
+inline const float ItemManager::hyperbolicScale(const size_t& amount, const float& multiplier)
 {
-    switch (scaling_type)
-    {
-    case ItemScalingType::Hyperbolic: return 1.f / (1.f + amount * multiplier);
-    case ItemScalingType::Linear:
-    default: return amount * multiplier;
-    }
+    return 1.f / (1.f + amount * multiplier);
+}
+
+inline const float ItemManager::linearScale(const size_t& amount, const float& multiplier)
+{
+    return amount * multiplier;
+}
+
+void ItemManager::update(Entity* entity, const ItemType& type, const size_t& amount)
+{
+    m_items[type]->function(entity, amount );
 }

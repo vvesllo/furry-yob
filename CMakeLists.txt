@@ -26,6 +26,7 @@ add_executable(
         src/Scenes/GameScene.cpp                    include/Scenes/GameScene.h
         
         src/Utils/Vector.cpp                        include/Utils/Vector.h
+        src/Utils/Types.cpp                        include/Utils/Types.h
         
         src/Core/Managers/ItemManager.cpp           include/Core/Managers/ItemManager.h
         

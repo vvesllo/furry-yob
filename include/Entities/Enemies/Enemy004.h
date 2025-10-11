@@ -9,7 +9,7 @@
 class Enemy004 : public Entity
 {
 private:
-    sf::Vector2f m_direction;
+    sf::Vector2f m_distance;
     float m_fire_tick;
 
 public:

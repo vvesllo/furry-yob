@@ -1,27 +1,24 @@
 #pragma once
 
-#include <map>
 #include <functional>
+#include <string>
+#include <memory>
+#include <map>
 
 class Entity;
 
 class ItemManager
 {
-private:
-
-    enum class ItemScalingType : short
-    {
-        Linear,
-        Hyperbolic,
-    };
-    
-    float itemScaling(const ItemScalingType& scaling_type, const size_t& amount, const float& multiplier); 
-    
 public:
     enum class ItemType : short
     {
         Adrenaline,
         Feather
+    };
+
+    struct ItemData {
+        const std::string texture_name;
+        std::function<void(Entity*, const size_t&)> function;
     };
 
     ItemManager();
@@ -30,8 +27,15 @@ public:
     ItemManager& operator=(const ItemManager& other) = delete;
 	static ItemManager& getInstance();
 
-    void update(Entity* entity, const size_t& amount, const ItemType& type);
+    std::map<ItemType, std::unique_ptr<ItemData>>& getItems();
+    void update(Entity* entity, const ItemType& type, const size_t& amount);
 
 private:
-    std::map<ItemType, std::function<void(Entity*, const size_t&)>> m_item_functions;
+
+    std::map<ItemType, std::unique_ptr<ItemData>> m_items;
+    
+    void initItems();
+
+    inline const float hyperbolicScale(const size_t& amount, const float& multiplier);    
+    inline const float linearScale(const size_t& amount, const float& multiplier);
 };
